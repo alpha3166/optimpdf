@@ -19,7 +19,7 @@ import org.apache.commons.cli.ParseException;
 
 public class OptionHandler {
 	private static final String VERSION = "1.0.0";
-	private static final String COMMAND = "java -jar optimpdf-%s.jar".formatted(VERSION);
+	private static final String COMMAND = String.format("java -jar optimpdf-%s.jar", VERSION);
 
 	private Map<Path, Path> pdfMap;
 	private boolean forceOverwrite;

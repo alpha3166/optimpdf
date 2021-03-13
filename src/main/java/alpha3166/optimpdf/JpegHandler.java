@@ -35,7 +35,7 @@ public class JpegHandler {
 	}
 
 	public String desc() {
-		return "%dx%d %dK%s".formatted(getWidth(), getHeight(), bytes.length / 1024, isGray() ? " gray" : "");
+		return String.format("%dx%d %dK%s", getWidth(), getHeight(), bytes.length / 1024, isGray() ? " gray" : "");
 	}
 
 	public JpegHandler resize(int quality, int maxWidth, int maxHeight, boolean bleach) throws IOException {
@@ -45,7 +45,7 @@ public class JpegHandler {
 		cmd.add("-quality");
 		cmd.add(Integer.toString(quality));
 		cmd.add("-resize");
-		cmd.add("%dx%d>".formatted(maxWidth, maxHeight));
+		cmd.add(String.format("%dx%d>", maxWidth, maxHeight));
 		if (bleach) {
 			cmd.add("-channel");
 			cmd.add("Red");

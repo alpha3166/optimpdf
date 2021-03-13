@@ -19,7 +19,7 @@ public class PageRunner implements Runnable {
 		try {
 			var logger = Logger.getLogger("");
 			var log = new StringBuilder();
-			log.append("  %d/%d".formatted(page, pdfHandler.getNumberOfPages()));
+			log.append(String.format("  %d/%d", page, pdfHandler.getNumberOfPages()));
 
 			var jpeg = pdfHandler.extractJpeg(page);
 			var jpegHandler = new JpegHandler(jpeg);
@@ -47,14 +47,14 @@ public class PageRunner implements Runnable {
 				}
 			}
 			var bleach = opt.isBleachPage(page);
-			log.append(" (fit %dx%d%s)".formatted(maxWidth, maxHeight, bleach ? " bleach" : ""));
+			log.append(String.format(" (fit %dx%d%s)", maxWidth, maxHeight, bleach ? " bleach" : ""));
 
 			var newJpegHandler = jpegHandler.resize(opt.quality(), maxWidth, maxHeight, bleach);
 			var newJpegWidth = newJpegHandler.getWidth();
 			var newJpegHeight = newJpegHandler.getHeight();
 			var newJpegBytes = newJpegHandler.getBytes();
 			var newJpegIsGray = newJpegHandler.isGray();
-			log.append(" > %s %d%%".formatted(newJpegHandler.desc(), newJpegBytes.length * 100 / jpeg.length));
+			log.append(String.format(" > %s %d%%", newJpegHandler.desc(), newJpegBytes.length * 100 / jpeg.length));
 
 			pdfHandler.replaceJpeg(page, newJpegBytes, newJpegWidth, newJpegHeight, newJpegIsGray);
 
