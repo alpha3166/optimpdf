@@ -92,7 +92,7 @@ public class OptionHandler {
 			if (!Files.isDirectory(outDir)) {
 				throw new IllegalArgumentException("-d " + cmd.getOptionValue("d"));
 			}
-			pdfMap.replaceAll((k, v) -> outDir.resolve(v));
+			pdfMap.replaceAll((k, v) -> outDir.resolve(v.getFileName()));
 		}
 
 		// Handle -o
