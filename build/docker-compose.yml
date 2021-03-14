@@ -1,0 +1,12 @@
+version: '3'
+services:
+  optimpdf:
+    image: maven:3-adoptopenjdk-11
+    user: ${UID}:${GID}
+    volumes:
+      - ${HOME}/.m2:/myhome/.m2
+      - ..:/proj
+    working_dir: /proj
+    environment:
+      - MAVEN_CONFIG=/myhome/.m2
+    command: mvn -Duser.home=/myhome package
