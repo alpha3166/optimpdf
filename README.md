@@ -10,7 +10,7 @@ OptimPDF is a simple small tool to reduce the PDF file size, optimizing the insi
 
 1. Install Java 11 or later and ImageMagick 7.
 
-2. Download `optimpdf-1.0.0-jar-with-dependencies.jar` from [Release page](releases).
+2. Download `optimpdf-1.0.0-jar-with-dependencies.jar` from [Release page](https://github.com/alpha3166/optimpdf/releases).
 
 3. Execute the JAR from the command-line, specifying target PDFs as arguments.
 
