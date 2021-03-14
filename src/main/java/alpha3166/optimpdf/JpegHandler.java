@@ -15,7 +15,10 @@ public class JpegHandler {
 
 	public JpegHandler(byte[] bytes) throws IOException {
 		this.bytes = bytes;
-		bufferedImage = ImageIO.read(new ByteArrayInputStream(bytes));
+		// ImageIO.read() is NOT thread safe
+		synchronized (ImageIO.class) {
+			bufferedImage = ImageIO.read(new ByteArrayInputStream(bytes));
+		}
 	}
 
 	public byte[] getBytes() {
