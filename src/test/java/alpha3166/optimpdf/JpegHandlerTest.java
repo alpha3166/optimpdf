@@ -4,28 +4,19 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import java.io.ByteArrayOutputStream;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class JpegHandlerTest {
-	byte[] generateJpeg480x640() throws Exception {
-		var pb = new ProcessBuilder("magick", "wizard:", "-");
-		var p = pb.start();
-		var pOut = p.getInputStream();
-		var jpeg = new ByteArrayOutputStream();
-		var buf = new byte[1024];
-		int cnt = 0;
-		while ((cnt = pOut.read(buf)) > 0) {
-			jpeg.write(buf, 0, cnt);
-		}
-		return jpeg.toByteArray();
+	byte[] srcJpeg;
+
+	@BeforeEach
+	void setUp() throws Exception {
+		srcJpeg = ImageMagickHelper.exec("wizard: -");
 	}
 
 	@Test
 	void testJpegHandler() throws Exception {
-		// Setup
-		byte[] srcJpeg = generateJpeg480x640();
 		// Exercise
 		var sut = new JpegHandler(srcJpeg);
 		// Verify
@@ -39,7 +30,6 @@ class JpegHandlerTest {
 	@Test
 	void testResize_FitToMaxWidth() throws Exception {
 		// Setup
-		byte[] srcJpeg = generateJpeg480x640();
 		var sut = new JpegHandler(srcJpeg);
 		// Exercise
 		var newJpeg = sut.resize(50, 240, 1000, false);
@@ -52,7 +42,6 @@ class JpegHandlerTest {
 	@Test
 	void testResize_FitToMaxHeight() throws Exception {
 		// Setup
-		byte[] srcJpeg = generateJpeg480x640();
 		var sut = new JpegHandler(srcJpeg);
 		// Exercise
 		var newJpeg = sut.resize(50, 1000, 320, false);
@@ -65,7 +54,6 @@ class JpegHandlerTest {
 	@Test
 	void testResize_NoShrink() throws Exception {
 		// Setup
-		byte[] srcJpeg = generateJpeg480x640();
 		var sut = new JpegHandler(srcJpeg);
 		// Exercise
 		var newJpeg = sut.resize(50, 1000, 1000, false);
@@ -78,7 +66,6 @@ class JpegHandlerTest {
 	@Test
 	void testResize_Bleach() throws Exception {
 		// Setup
-		byte[] srcJpeg = generateJpeg480x640();
 		var sut = new JpegHandler(srcJpeg);
 		// Exercise
 		var newJpeg = sut.resize(50, 240, 320, true);

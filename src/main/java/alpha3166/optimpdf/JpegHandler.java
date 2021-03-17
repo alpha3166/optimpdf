@@ -2,9 +2,7 @@ package alpha3166.optimpdf;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -61,11 +59,11 @@ public class JpegHandler {
 		var pb = new ProcessBuilder(cmd);
 		var p = pb.start();
 
-		var pErrReader = new AsynchronousProcessStderrReader(p.getErrorStream());
+		var pErrReader = new AsyncProcessStderrReader(p.getErrorStream());
 		var pErrReaderThread = new Thread(pErrReader);
 		pErrReaderThread.start();
 
-		var pOutReader = new AsynchronousProcessOutputReader(p.getInputStream());
+		var pOutReader = new AsyncProcessOutputReader(p.getInputStream());
 		var pOutReaderThread = new Thread(pOutReader);
 		pOutReaderThread.start();
 
@@ -82,52 +80,5 @@ public class JpegHandler {
 		}
 
 		return new JpegHandler(pOutReader.getBytes());
-	}
-}
-
-class AsynchronousProcessOutputReader implements Runnable {
-	private InputStream pOut;
-	private ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-
-	public AsynchronousProcessOutputReader(InputStream pOut) {
-		this.pOut = pOut;
-	}
-
-	@Override
-	public void run() {
-		try {
-			byte[] buf = new byte[1024 * 1024];
-			int cnt = 0;
-			while ((cnt = pOut.read(buf)) > 0) {
-				bytes.write(buf, 0, cnt);
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public byte[] getBytes() {
-		return bytes.toByteArray();
-	}
-}
-
-class AsynchronousProcessStderrReader implements Runnable {
-	private InputStream pErr;
-
-	public AsynchronousProcessStderrReader(InputStream pErr) {
-		this.pErr = pErr;
-	}
-
-	@Override
-	public void run() {
-		try {
-			byte[] buf = new byte[1024];
-			int cnt = 0;
-			while ((cnt = pErr.read(buf)) > 0) {
-				System.err.write(buf, 0, cnt);
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 }
