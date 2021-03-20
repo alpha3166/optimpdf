@@ -6,7 +6,7 @@ services:
     user: ${UID}:${GID}
     volumes:
       - ${HOME}/.m2:/myhome/.m2
-      - ..:/proj
+      - ../optimpdf:/proj
     working_dir: /proj
     environment:
       - MAVEN_CONFIG=/myhome/.m2

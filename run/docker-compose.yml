@@ -5,7 +5,7 @@ services:
     image: optimpdf
     user: ${UID}:${GID}
     volumes:
-      - ../target:/mylib
+      - ../optimpdf/target:/mylib
       - .:/work
     working_dir: /work
     command: java -jar /mylib/optimpdf-1.0.0-jar-with-dependencies.jar -d output -u input
