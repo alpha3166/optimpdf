@@ -41,43 +41,12 @@ OptimPDFは、PDF内部のJPEGの幅と高さをiPadやKindleなどの携帯端�
 
 ## OptimPDFのビルド方法
 
-GitとMavenをインストールして、`mvn`を呼び出します。
+Git、Java 11、Maven、ImageMagick 7をインストールし、クローン&ビルドします。
 
     git clone https://github.com/alpha3166/optimpdf
-    cd optimpdf
+    cd optimpdf/optimpdf
     mvn package
 
-Dockerでは、代わりにこれを使います。
+## DockerでOptimPDFを使うには
 
-    git clone https://github.com/alpha3166/optimpdf
-    cd optimpdf
-    docker run -it --rm -u $(id -u):$(id -g) -v ~/.m2:/myhome/.m2 -v $PWD:/proj -w /proj -e MAVEN_CONFIG=/myhome/.m2 maven:3-adoptopenjdk-11 mvn -Duser.home=/myhome package
-
-Docker Composeでは、代わりに以下を使用します。`prepare-for-docker-compose.sh`は初回のみの使用となります。
-
-    git clone https://github.com/alpha3166/optimpdf
-    cd optimpdf/build
-    ./prepare-for-docker-compose.sh
-    docker-compose up
-
-## OptimPDFの実行方法
-
-Java 11以降とImageMagick 7をインストールし、全部入りのJARを使って`java`を実行します。
-
-    java -jar optimpdf-1.0.0-jar-with-dependencies.jar some.pdf
-
-Dockerでは、代わりにこれを使います。
-
-    cd optimpdf/run
-    docker build -t optimpdf .
-    docker run -it --rm -u $(id -u):$(id -g) -v $PWD/../target:/mylib -v $PWD:/work -w /work optimpdf java -jar /mylib/optimpdf-1.0.0-jar-with-dependencies.jar some.pdf
-
-Docker Composeでは、ソースのPDFを`optimpdf/run/input`ディレクトリに入れて、次のようにします。`prepare-for-docker-compose.sh`は初回のみです。
-
-    cd optimpdf/run
-    ./prepare-for-docker-compose.sh
-    docker-compose up
-
-Dockerコンテナ内では、以下のコマンドが自動的に実行されます。
-
-    java -jar optimpdf-1.0.0-jar-with-dependencies.jar -d output -u input
+[docker/run](docker/run)ディレクトリ内の[README.md](docker/run/README.md)を参照してください。

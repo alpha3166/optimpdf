@@ -1,0 +1,11 @@
+version: '3'
+services:
+  optimpdf:
+    build: 
+      context: ../..
+      dockerfile: docker/run/Dockerfile
+    image: optimpdf
+    user: ${UID}:${GID}
+    volumes:
+      - .:/work
+    working_dir: /work

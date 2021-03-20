@@ -41,43 +41,12 @@ OptimPDF is a simple small tool to reduce the PDF file size, optimizing the insi
 
 ## How to build OptimPDF
 
-Install Git and Maven, and just call `mvn`.
+Install Git, Java 11, Maven, and ImageMagick 7, then clone & build.
 
     git clone https://github.com/alpha3166/optimpdf
-    cd optimpdf
+    cd optimpdf/optimpdf
     mvn package
 
-With Docker, use this instead.
+## How to use OptimPDF with Docker
 
-    git clone https://github.com/alpha3166/optimpdf
-    cd optimpdf
-    docker run -it --rm -u $(id -u):$(id -g) -v ~/.m2:/myhome/.m2 -v $PWD:/proj -w /proj -e MAVEN_CONFIG=/myhome/.m2 maven:3-adoptopenjdk-11 mvn -Duser.home=/myhome package
-
-With Docker Compose, use this instead. `prepare-for-docker-compose.sh` is for the first time only.
-
-    git clone https://github.com/alpha3166/optimpdf
-    cd optimpdf/build
-    ./prepare-for-docker-compose.sh
-    docker-compose up
-
-## How to run OptimPDF
-
-Install Java 11 or later and ImageMagick 7, and run `java` using the all-in-one JAR.
-
-    java -jar optimpdf-1.0.0-jar-with-dependencies.jar some.pdf
-
-With Docker, use this instead.
-
-    cd optimpdf/run
-    docker build -t optimpdf .
-    docker run -it --rm -u $(id -u):$(id -g) -v $PWD/../target:/mylib -v $PWD:/work -w /work optimpdf java -jar /mylib/optimpdf-1.0.0-jar-with-dependencies.jar some.pdf
-
-With Docker Compose, put your source PDFs into `optimpdf/run/input` directory and do this. `prepare-for-docker-compose.sh` is for the first time only.
-
-    cd optimpdf/run
-    ./prepare-for-docker-compose.sh
-    docker-compose up
-
-Within the Docker container, the following command will be executed automatically.
-
-    java -jar optimpdf-1.0.0-jar-with-dependencies.jar -d output -u input
+See the [README.md](docker/run/README.md) in [docker/run](docker/run) directory.
