@@ -21,7 +21,7 @@ OptimPDFは、PDF内部のJPEGの幅と高さをiPadやKindleなどの携帯端�
 ## コマンドラインオプション
 
     使い方: java -jar OPTIMPDF_JAR [OPTION]... PDF_OR_DIR...
-    ハンドヘルドデバイス用にPDFを最適化
+    携帯端末用にPDFを最適化
     -b <arg>   指定したページを漂白します (例: 1,3-5 または all)
     -d <arg>   出力ディレクトリ
     -f         出力ファイルを上書きします
