@@ -8,5 +8,5 @@
 
 or
 
-    ./docker-compose-pre.sh
+    ./docker-compose-pre.sh    # for the first time only
     docker-compose up

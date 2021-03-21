@@ -8,6 +8,5 @@
 
 or
 
-    docker-compose up
-    ./docker-compose-pre.sh
+    ./docker-compose-pre.sh    # for the first time only
     docker-compose run optimpdf some.pdf
