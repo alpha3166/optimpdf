@@ -1,8 +1,10 @@
 package alpha3166.optimpdf;
 
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
@@ -18,9 +20,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 public class OptionHandler {
-	private static final String VERSION = "1.0.0";
-	private static final String COMMAND = String.format("java -jar optimpdf-%s-jar-with-dependencies.jar", VERSION);
-
+	private boolean abort;
 	private Map<Path, Path> pdfMap;
 	private boolean forceOverwrite;
 	private BitSet targetPages;
@@ -39,7 +39,7 @@ public class OptionHandler {
 		options.addOption("h", "display this help and exit");
 		options.addOption("s", true, "output file suffix (Default: _r)");
 		options.addOption("d", true, "output directory");
-		options.addOption("o", true, "output file name (for single input only)");
+		options.addOption("o", true, "output file name (for single input only). disable -d");
 		options.addOption("u", "process only when the source PDF is newer than the"
 				+ " destination PDF or when the destination PDF is missing. enable -f");
 		options.addOption("l", "display the list of PDFs to be processed and exit");
@@ -59,8 +59,10 @@ public class OptionHandler {
 
 		// Handle -h
 		if (cmd.hasOption("h")) {
-			new HelpFormatter().printHelp(COMMAND + " [OPTIONS] PDF...", options);
-			System.exit(0);
+			new HelpFormatter().printHelp("java -jar OPTIMPDF_JAR [OPTION]... PDF_OR_DIR...",
+					"Optimizes PDFs for handheld devices", options, null);
+			abort = true;
+			return;
 		}
 
 		// Handle arguments
@@ -90,7 +92,7 @@ public class OptionHandler {
 		if (cmd.hasOption("d")) {
 			var outDir = Paths.get(cmd.getOptionValue("d"));
 			if (!Files.isDirectory(outDir)) {
-				throw new IllegalArgumentException("-d " + cmd.getOptionValue("d"));
+				throw new NoSuchFileException("-d " + cmd.getOptionValue("d"));
 			}
 			pdfMap.replaceAll((k, v) -> outDir.resolve(v.getFileName()));
 		}
@@ -120,7 +122,8 @@ public class OptionHandler {
 		// Handle -l
 		if (cmd.hasOption("l")) {
 			pdfMap.entrySet().stream().forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
-			System.exit(1);
+			abort = true;
+			return;
 		}
 
 		// Handle -f
@@ -129,7 +132,7 @@ public class OptionHandler {
 			if (!forceOverwrite) {
 				for (var newPdf : pdfMap.values()) {
 					if (Files.exists(newPdf)) {
-						throw new IllegalArgumentException(newPdf + " already exists.");
+						throw new FileAlreadyExistsException(newPdf.toString());
 					}
 				}
 			}
@@ -140,7 +143,7 @@ public class OptionHandler {
 			try {
 				targetPages = parsePageDesignator(cmd.getOptionValue("p"));
 			} catch (Exception e) {
-				throw new IllegalArgumentException("-p " + cmd.getOptionValue("p"));
+				throw new IllegalArgumentException("-p " + cmd.getOptionValue("p"), e);
 			}
 		}
 
@@ -210,14 +213,21 @@ public class OptionHandler {
 		for (var range : ranges) {
 			var tokens = range.split("-", -1);
 			if (tokens.length == 1) {
-				targetPages.set(Integer.parseInt(tokens[0]));
+				pages.set(Integer.parseInt(tokens[0]));
 			} else if (tokens.length == 2) {
-				targetPages.set(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1]) + 1);
+				pages.set(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1]) + 1);
 			} else {
 				throw new NumberFormatException(designator);
 			}
 		}
+		if (pages.get(0)) {
+			throw new IndexOutOfBoundsException("PDF pages start from 1");
+		}
 		return pages;
+	}
+
+	public boolean abort() {
+		return abort;
 	}
 
 	public Map<Path, Path> pdfMap() {

@@ -1,5 +1,6 @@
 package alpha3166.optimpdf;
 
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +21,9 @@ public class Main {
 		}
 
 		var opt = new OptionHandler(args);
+		if (opt.abort()) {
+			return;
+		}
 		var pdfMap = opt.pdfMap();
 		for (var pdf : pdfMap.keySet()) {
 			logger.info(pdf.toString());
@@ -37,7 +41,7 @@ public class Main {
 
 			var newPdf = pdfMap.get(pdf);
 			if (!opt.isForceOverwrite() && Files.exists(newPdf)) {
-				throw new IllegalStateException(newPdf + " already exists");
+				throw new FileAlreadyExistsException(newPdf.toString());
 			}
 			logger.info("  -> " + newPdf);
 			if (!opt.isDryRun()) {
