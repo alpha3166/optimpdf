@@ -2,7 +2,7 @@ package alpha3166.optimpdf;
 
 public class ImageMagickHelper {
 	public static byte[] exec(String args) throws Exception {
-		var pb = new ProcessBuilder(("magick " + args).split(" "));
+		var pb = new ProcessBuilder(("convert " + args).split(" "));
 		var p = pb.start();
 
 		var pErrReader = new AsyncProcessStderrReader(p.getErrorStream());
