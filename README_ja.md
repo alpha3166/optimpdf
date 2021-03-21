@@ -10,11 +10,11 @@ OptimPDFは、PDF内部のJPEGの幅と高さをiPadやKindleなどの携帯端�
 
 1. Java (11以降) とImageMagick (6以降) をインストールします。
 
-2. [Releaseページ](https://github.com/alpha3166/optimpdf/releases)から`optimpdf-1.0.0-jar-with-dependencies.jar`をダウンロードします。
+2. [Releaseページ](https://github.com/alpha3166/optimpdf/releases)から`optimpdf-1.0.1-jar-with-dependencies.jar`をダウンロードします。
 
 3. コマンドラインから、対象となるPDFを引数に指定して、JARを実行します。
 
-       java -jar optimpdf-1.0.0-jar-with-dependencies.jar some.pdf
+       java -jar optimpdf-1.0.1-jar-with-dependencies.jar some.pdf
 
    上のサンプルでは、元PDFと同じディレクトリに縮小版の`some_r.pdf`が作成されます。引数にディレクトリを指定すると、そのディレクトリ以下のすべての`*.pdf`を処理します。
 
