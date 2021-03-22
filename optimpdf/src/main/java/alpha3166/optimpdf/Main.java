@@ -26,8 +26,17 @@ public class Main {
 		}
 		var pdfMap = opt.pdfMap();
 		for (var pdf : pdfMap.keySet()) {
+			var newPdf = pdfMap.get(pdf);
+			if (!opt.isForceOverwrite() && Files.exists(newPdf)) {
+				throw new FileAlreadyExistsException(newPdf.toString());
+			}
 			logger.info(pdf.toString());
-			var pdfHandler = new PdfHandler(pdf);
+			PdfHandler pdfHandler = null;
+			if (opt.isDryRun()) {
+				pdfHandler = new PdfHandler(pdf);
+			} else {
+				pdfHandler = new PdfHandler(pdf, newPdf);
+			}
 			var threadPool = Executors.newFixedThreadPool(opt.numberOfThreads());
 			for (int page = 1; page <= pdfHandler.getNumberOfPages(); page++) {
 				if (opt.isTargetPage(page)) {
@@ -38,15 +47,8 @@ public class Main {
 			threadPool.shutdown();
 			while (!threadPool.awaitTermination(500, TimeUnit.MILLISECONDS)) {
 			}
-
-			var newPdf = pdfMap.get(pdf);
-			if (!opt.isForceOverwrite() && Files.exists(newPdf)) {
-				throw new FileAlreadyExistsException(newPdf.toString());
-			}
 			logger.info("  -> " + newPdf);
-			if (!opt.isDryRun()) {
-				pdfHandler.save(newPdf);
-			}
+			pdfHandler.close();
 		}
 	}
 }

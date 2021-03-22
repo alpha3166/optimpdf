@@ -28,8 +28,8 @@ class MainTest {
 	@Test
 	void test() throws Exception {
 		// Setup
-		var pdf = ImageMagickHelper.exec("wizard: pdf:-");
-		Files.write(base.resolve("src.pdf"), pdf);
+		var jpeg = ImageMagickHelper.exec("wizard: jpeg:-");
+		ITextHelper.generatePdf(base.resolve("src.pdf"), jpeg);
 		// Exercise
 		Main.main(base + "/src.pdf");
 		// Verify
@@ -39,8 +39,8 @@ class MainTest {
 	@Test
 	void test_Abort() throws Exception {
 		// Setup
-		var pdf = ImageMagickHelper.exec("wizard: pdf:-");
-		Files.write(base.resolve("src.pdf"), pdf);
+		var jpeg = ImageMagickHelper.exec("wizard: jpeg:-");
+		ITextHelper.generatePdf(base.resolve("src.pdf"), jpeg);
 		// Exercise
 		Main.main("-l", base + "/src.pdf");
 		// Verify
@@ -50,8 +50,8 @@ class MainTest {
 	@Test
 	void test_DryRun() throws Exception {
 		// Setup
-		var pdf = ImageMagickHelper.exec("wizard: pdf:-");
-		Files.write(base.resolve("src.pdf"), pdf);
+		var jpeg = ImageMagickHelper.exec("wizard: jpeg:-");
+		ITextHelper.generatePdf(base.resolve("src.pdf"), jpeg);
 		// Exercise
 		Main.main("-n", base + "/src.pdf");
 		// Verify

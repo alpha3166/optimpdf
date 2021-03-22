@@ -12,6 +12,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Image;
+
 class PageRunnerTest {
 	Path base;
 
@@ -47,8 +53,8 @@ class PageRunnerTest {
 
 	void test(int srcWidth, int srcHeight, int expectedWidth, int expectedHeight) throws Exception {
 		// Setup
-		var pdf = ImageMagickHelper.exec(String.format("wizard: -resize %dx%d! pdf:-", srcWidth, srcHeight));
-		Files.write(base.resolve("src.pdf"), pdf);
+		var jpeg = ImageMagickHelper.exec(String.format("wizard: -resize %dx%d! jpeg:-", srcWidth, srcHeight));
+		ITextHelper.generatePdf(base.resolve("src.pdf"), jpeg);
 		var pdfHandler = new PdfHandler(base.resolve("src.pdf"));
 		var optHandler = new OptionHandler(base + "/src.pdf");
 		// Exercise

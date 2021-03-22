@@ -12,7 +12,7 @@ class JpegHandlerTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		srcJpeg = ImageMagickHelper.exec("wizard: -");
+		srcJpeg = ImageMagickHelper.exec("wizard: jpeg:-");
 	}
 
 	@Test

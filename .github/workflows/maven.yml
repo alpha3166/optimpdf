@@ -22,7 +22,5 @@ jobs:
         java-version: 11
     - name: Install ImageMagick
       run: sudo apt-get install imagemagick
-    - name: Enable ImageMagick PDF conversion
-      run: sudo sed -i.org -e 's#<policy domain="coder" rights="none" pattern="PDF" />#<policy domain="coder" rights="read | write" pattern="PDF" />#' /etc/ImageMagick-6/policy.xml
     - name: Build with Maven
       run: mvn --batch-mode package --file optimpdf/pom.xml

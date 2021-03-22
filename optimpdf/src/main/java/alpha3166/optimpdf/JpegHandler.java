@@ -16,6 +16,9 @@ public class JpegHandler {
 		// ImageIO.read() is NOT thread safe
 		synchronized (ImageIO.class) {
 			bufferedImage = ImageIO.read(new ByteArrayInputStream(bytes));
+			if (bufferedImage == null) {
+				throw new NullPointerException("ImageIO.read() returned null");
+			}
 		}
 	}
 
