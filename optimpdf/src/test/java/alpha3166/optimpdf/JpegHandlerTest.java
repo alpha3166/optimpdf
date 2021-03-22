@@ -3,6 +3,7 @@ package alpha3166.optimpdf;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,7 @@ class JpegHandlerTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		srcJpeg = ImageMagickHelper.exec("wizard: jpeg:-");
+		srcJpeg = DataManager.generateJpeg();
 	}
 
 	@Test
@@ -72,6 +73,6 @@ class JpegHandlerTest {
 		// Verify
 		assertEquals(240, newJpeg.getWidth());
 		assertEquals(320, newJpeg.getHeight());
-//		assertTrue(newJpeg.isGray());
+		assertTrue(newJpeg.isGray());
 	}
 }

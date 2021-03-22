@@ -2,33 +2,23 @@ package alpha3166.optimpdf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Comparator;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Image;
 
 class PageRunnerTest {
 	Path base;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		base = Files.createTempDirectory(Paths.get(""), "junit");
+		base = DataManager.makeTestDir();
 	}
 
 	@AfterEach
 	void tearDown() throws Exception {
-		Files.walk(base).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+		DataManager.removeDir(base);
 	}
 
 	@Test
@@ -53,8 +43,8 @@ class PageRunnerTest {
 
 	void test(int srcWidth, int srcHeight, int expectedWidth, int expectedHeight) throws Exception {
 		// Setup
-		var jpeg = ImageMagickHelper.exec(String.format("wizard: -resize %dx%d! jpeg:-", srcWidth, srcHeight));
-		ITextHelper.generatePdf(base.resolve("src.pdf"), jpeg);
+		var jpeg = DataManager.generateJpeg(srcWidth, srcHeight);
+		DataManager.generatePdf(base.resolve("src.pdf"), jpeg);
 		var pdfHandler = new PdfHandler(base.resolve("src.pdf"));
 		var optHandler = new OptionHandler(base + "/src.pdf");
 		// Exercise

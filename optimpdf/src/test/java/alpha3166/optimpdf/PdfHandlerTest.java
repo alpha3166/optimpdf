@@ -5,11 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Comparator;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -21,14 +18,14 @@ class PdfHandlerTest {
 
 	@BeforeAll
 	static void setUpClass() throws Exception {
-		base = Files.createTempDirectory(Paths.get(""), "junit");
-		var jpeg = ImageMagickHelper.exec("wizard: jpeg:-");
-		ITextHelper.generatePdf(base.resolve("src.pdf"), jpeg);
+		base = DataManager.makeTestDir();
+		var jpeg = DataManager.generateJpeg();
+		DataManager.generatePdf(base.resolve("src.pdf"), jpeg);
 	}
 
 	@AfterAll
 	static void tearDownClass() throws Exception {
-		Files.walk(base).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+		DataManager.removeDir(base);
 	}
 
 	@AfterEach
@@ -69,7 +66,7 @@ class PdfHandlerTest {
 	@Test
 	void testReplaceJpeg() throws Exception {
 		// Setup
-		var newJpeg = ImageMagickHelper.exec("wizard: -resize 240x320 jpeg:-");
+		var newJpeg = DataManager.generateJpeg(240, 320);
 		var sut = new PdfHandler(base.resolve("src.pdf"), base.resolve("dest.pdf"));
 		// Exercise
 		sut.replaceJpeg(1, newJpeg, 240, 320, false);
@@ -82,7 +79,7 @@ class PdfHandlerTest {
 	@Test
 	void testClose() throws Exception {
 		// Setup
-		var newJpeg = ImageMagickHelper.exec("wizard: -resize 240x320 jpeg:-");
+		var newJpeg = DataManager.generateJpeg(240, 320);
 		var sut = new PdfHandler(base.resolve("src.pdf"), base.resolve("dest.pdf"));
 		sut.replaceJpeg(1, newJpeg, 240, 320, false);
 		// Exercise

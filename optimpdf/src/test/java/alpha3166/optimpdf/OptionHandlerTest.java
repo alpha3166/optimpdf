@@ -6,15 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
@@ -29,7 +26,7 @@ class OptionHandlerTest {
 
 		@BeforeEach
 		void setUp() throws Exception {
-			base = Files.createTempDirectory(Paths.get(""), "junit");
+			base = DataManager.makeTestDir();
 
 			Files.createFile(base.resolve("a.pdf"));
 
@@ -48,7 +45,7 @@ class OptionHandlerTest {
 
 		@AfterEach
 		void tearDown() throws Exception {
-			Files.walk(base).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+			DataManager.removeDir(base);
 		}
 
 		@Test
