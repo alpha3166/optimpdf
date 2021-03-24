@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.Comparator;
 
 import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -55,11 +56,17 @@ public class DataManager {
 	}
 
 	public static void generatePdf(Path path, byte[] jpeg) throws FileNotFoundException {
+		var imageData = ImageDataFactory.create(jpeg);
+		// Assume the jpeg is 300dpi, and calculate the size in points.
+		var widthPt = (imageData.getWidth() / 300) * 72;
+		var heightPt = (imageData.getHeight() / 300) * 72;
+
 		var pdfWriter = new PdfWriter(path.toFile());
 		var pdfDocument = new PdfDocument(pdfWriter);
-		var document = new Document(pdfDocument);
-		var imageData = ImageDataFactory.create(jpeg);
+		var document = new Document(pdfDocument, new PageSize(widthPt, heightPt));
+		document.setMargins(0, 0, 0, 0);
 		var image = new Image(imageData);
+		image.scaleToFit(widthPt, heightPt);
 		document.add(image);
 		document.close();
 	}
