@@ -377,7 +377,8 @@ class OptionHandlerTest {
 			// Exercise
 			var sut = new OptionHandler();
 			// Verify
-			assertEquals(8, sut.numberOfThreads());
+			var expected = Runtime.getRuntime().availableProcessors();
+			assertEquals(expected, sut.numberOfThreads());
 		}
 
 		@Test

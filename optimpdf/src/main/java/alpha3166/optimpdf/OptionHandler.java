@@ -52,7 +52,7 @@ public class OptionHandler {
 		options.addOption("b", true, "bleach specified pages (eg: 1,3-5 or all)");
 		options.addOption("n", "dry-run (skip saving new PDFs)");
 		options.addOption("q", "suppress displaying info of each page");
-		options.addOption("t", true, "number of threads to use (Default: 8)");
+		options.addOption("t", true, "number of threads to use (Default: Number of CPU cores)");
 
 		// Parse
 		var cmd = new DefaultParser().parse(options, args);
@@ -201,7 +201,8 @@ public class OptionHandler {
 
 		// Handle -t
 		try {
-			numberOfThreads = Integer.parseInt(cmd.getOptionValue("t", "8"));
+			var numberOfCores = Runtime.getRuntime().availableProcessors();
+			numberOfThreads = Integer.parseInt(cmd.getOptionValue("t", numberOfCores + ""));
 		} catch (Exception e) {
 			throw new IllegalArgumentException("-t " + cmd.getOptionValue("t"), e);
 		}
