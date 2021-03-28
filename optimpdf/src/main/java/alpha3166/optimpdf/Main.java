@@ -31,24 +31,19 @@ public class Main {
 				throw new FileAlreadyExistsException(newPdf.toString());
 			}
 			logger.info(pdf.toString());
-			PdfHandler pdfHandler = null;
-			if (opt.isDryRun()) {
-				pdfHandler = new PdfHandler(pdf);
-			} else {
-				pdfHandler = new PdfHandler(pdf, newPdf);
-			}
-			var threadPool = Executors.newFixedThreadPool(opt.numberOfThreads());
-			for (int page = 1; page <= pdfHandler.getNumberOfPages(); page++) {
-				if (opt.isTargetPage(page)) {
-					var pageRunner = new PageRunner(pdfHandler, page, opt);
-					threadPool.execute(pageRunner);
+			try (var pdfHandler = opt.isDryRun() ? new PdfHandler(pdf) : new PdfHandler(pdf, newPdf)) {
+				var threadPool = Executors.newFixedThreadPool(opt.numberOfThreads());
+				for (int page = 1; page <= pdfHandler.getNumberOfPages(); page++) {
+					if (opt.isTargetPage(page)) {
+						var pageRunner = new PageRunner(pdfHandler, page, opt);
+						threadPool.execute(pageRunner);
+					}
 				}
+				threadPool.shutdown();
+				while (!threadPool.awaitTermination(500, TimeUnit.MILLISECONDS)) {
+				}
+				logger.info("  -> " + newPdf);
 			}
-			threadPool.shutdown();
-			while (!threadPool.awaitTermination(500, TimeUnit.MILLISECONDS)) {
-			}
-			logger.info("  -> " + newPdf);
-			pdfHandler.close();
 		}
 	}
 }

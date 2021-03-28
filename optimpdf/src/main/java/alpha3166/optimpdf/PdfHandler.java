@@ -10,7 +10,7 @@ import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfStream;
 import com.itextpdf.kernel.pdf.PdfWriter;
 
-public class PdfHandler {
+public class PdfHandler implements AutoCloseable {
 	private PdfDocument pdfDoc;
 
 	public PdfHandler(Path src) throws IOException {
