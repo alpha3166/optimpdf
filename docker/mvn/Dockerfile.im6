@@ -2,5 +2,4 @@ FROM adoptopenjdk:11
 RUN sed -i.org -e 's#//archive#//jp.archive#' /etc/apt/sources.list && \
     apt-get update && \
     apt-get full-upgrade -y
-RUN apt-get install -y maven imagemagick && \
-    sed -i.org -e 's#<policy domain="coder" rights="none" pattern="PDF" />#<policy domain="coder" rights="read | write" pattern="PDF" />#' /etc/ImageMagick-6/policy.xml
+RUN apt-get install -y maven imagemagick
