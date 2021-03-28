@@ -1,8 +1,10 @@
 package alpha3166.optimpdf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,10 +12,17 @@ import org.junit.jupiter.api.Test;
 
 class PageRunnerTest {
 	Path base;
+	LogHandler logHandler;
 
 	@BeforeEach
 	void setUp() throws Exception {
 		base = DataManager.makeTestDir();
+		logHandler = new LogHandler();
+		var logger = Logger.getLogger("");
+		for (var handler : logger.getHandlers()) {
+			logger.removeHandler(handler);
+		}
+		logger.addHandler(logHandler);
 	}
 
 	@AfterEach
@@ -54,5 +63,9 @@ class PageRunnerTest {
 		var jpegHandler = new JpegHandler(pdfHandler.extractJpeg(1));
 		assertEquals(expectedWidth, jpegHandler.getWidth());
 		assertEquals(expectedHeight, jpegHandler.getHeight());
+		assertEquals(1, logHandler.getLogCount());
+		var expectedLog = String.format("  1/1 %dx%d \\d+K \\(fit \\d+x\\d+\\) > %dx%d \\d+K \\d+%%", //
+				srcWidth, srcHeight, expectedWidth, expectedHeight);
+		assertTrue(logHandler.getLog(0).matches(expectedLog));
 	}
 }

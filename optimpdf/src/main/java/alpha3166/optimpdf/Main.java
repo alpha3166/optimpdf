@@ -4,22 +4,20 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Formatter;
+import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public class Main {
-	public static void main(String... args) throws Exception {
-		var logger = Logger.getLogger("");
-		for (var handler : logger.getHandlers()) {
-			handler.setFormatter(new Formatter() {
-				@Override
-				public String format(LogRecord record) {
-					return record.getMessage() + "\n";
-				}
-			});
-		}
+	Logger logger;
 
+	public static void main(String... args) throws Exception {
+		var self = new Main();
+		self.logger = setupLogger();
+		self.execute(args);
+	}
+
+	public void execute(String... args) throws Exception {
 		var opt = new OptionHandler(args);
 		if (opt.abort()) {
 			return;
@@ -45,5 +43,27 @@ public class Main {
 				logger.info("  -> " + newPdf);
 			}
 		}
+	}
+
+	public static Logger setupLogger() {
+		var logger = Logger.getLogger("");
+		for (var handler : logger.getHandlers()) {
+			logger.removeHandler(handler); // Remove default ConsoleHandler
+		}
+		logger.addHandler(new Handler() {
+			@Override
+			public void publish(LogRecord record) {
+				System.out.println(record.getMessage());
+			}
+
+			@Override
+			public void flush() {
+			}
+
+			@Override
+			public void close() throws SecurityException {
+			}
+		});
+		return logger;
 	}
 }

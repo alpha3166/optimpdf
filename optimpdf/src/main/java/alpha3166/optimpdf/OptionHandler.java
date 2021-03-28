@@ -13,6 +13,7 @@ import java.util.BitSet;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -121,7 +122,8 @@ public class OptionHandler {
 
 		// Handle -l
 		if (cmd.hasOption("l")) {
-			pdfMap.entrySet().stream().forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
+			var logger = Logger.getLogger("");
+			pdfMap.entrySet().stream().forEach(e -> logger.info(e.getKey() + " -> " + e.getValue()));
 			abort = true;
 			return;
 		}
