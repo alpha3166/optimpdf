@@ -45,7 +45,7 @@ OptimPDF is a simple small tool to reduce the PDF file size, optimizing the insi
 Install Git, Java (11 or later), Maven, and ImageMagick (6 or later), then clone & build.
 
     git clone https://github.com/alpha3166/optimpdf
-    cd optimpdf/optimpdf
+    cd optimpdf
     mvn package
 
 ## How to use OptimPDF with Docker

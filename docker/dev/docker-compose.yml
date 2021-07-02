@@ -1,0 +1,12 @@
+version: '3'
+services:
+  ws:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: optimpdf:dev
+    user: 1000:1000
+    volumes:
+      - ${HOME}/.m2:/home/me/.m2
+      - ../..:/workspace
+    working_dir: /workspace

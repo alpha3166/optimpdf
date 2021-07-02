@@ -45,7 +45,7 @@ OptimPDFは、PDF内部のJPEGの幅と高さをiPadやKindleなどの携帯端�
 Git、Java (11以降)、Maven、ImageMagick (6以降) をインストールし、クローン&ビルドします。
 
     git clone https://github.com/alpha3166/optimpdf
-    cd optimpdf/optimpdf
+    cd optimpdf
     mvn package
 
 ## DockerでOptimPDFを使うには
