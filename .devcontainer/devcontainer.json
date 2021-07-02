@@ -24,9 +24,14 @@
 
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
+		// Java Extension Pack
 		"vscjava.vscode-java-pack",
+		// markdownlint
 		"DavidAnson.vscode-markdownlint",
-		"ms-azuretools.vscode-docker"
+		// Docker
+		"ms-azuretools.vscode-docker",
+		// Dependency Analytics
+		"redhat.fabric8-analytics"
 	]
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
