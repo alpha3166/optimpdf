@@ -50,4 +50,4 @@ Git、Java (11以降)、Maven、ImageMagick (6以降) をインストールし�
 
 ## DockerでOptimPDFを使うには
 
-[docker/run](docker/run)ディレクトリ内の[README.md](docker/run/README.md)を参照してください。
+[docker/optimpdf_run](docker/optimpdf_run)ディレクトリ内の[README.md](docker/optimpdf_run/README.md)を参照してください。

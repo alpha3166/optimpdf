@@ -3,7 +3,7 @@ services:
   ws:
     build:
       context: ../..
-      dockerfile: docker/run/Dockerfile
+      dockerfile: docker/optimpdf_run/Dockerfile
     image: optimpdf
     user: 1000:1000
     volumes:

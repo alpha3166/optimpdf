@@ -50,4 +50,4 @@ Install Git, Java (11 or later), Maven, and ImageMagick (6 or later), then clone
 
 ## How to use OptimPDF with Docker
 
-See the [README.md](docker/run/README.md) in [docker/run](docker/run) directory.
+See the [README.md](docker/optimpdf_run/README.md) in [docker/optimpdf_run](docker/optimpdf_run) directory.
