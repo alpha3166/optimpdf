@@ -4,25 +4,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
-import java.util.logging.Logger;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class PageRunnerTest {
+	List<String> logs = LogAppender.logs;
 	Path base;
-	LogHandler logHandler;
 
 	@BeforeEach
 	void setUp() throws Exception {
+		logs.clear();
 		base = DataManager.makeTestDir();
-		logHandler = new LogHandler();
-		var logger = Logger.getLogger("");
-		for (var handler : logger.getHandlers()) {
-			logger.removeHandler(handler);
-		}
-		logger.addHandler(logHandler);
 	}
 
 	@AfterEach
@@ -63,9 +58,9 @@ class PageRunnerTest {
 		var jpegHandler = new JpegHandler(pdfHandler.extractJpeg(1));
 		assertEquals(expectedWidth, jpegHandler.getWidth());
 		assertEquals(expectedHeight, jpegHandler.getHeight());
-		assertEquals(1, logHandler.getLogCount());
+		assertEquals(1, logs.size());
 		var expectedLog = String.format("  1/1 %dx%d \\d+K \\(fit \\d+x\\d+\\) > %dx%d \\d+K \\d+%%", //
 				srcWidth, srcHeight, expectedWidth, expectedHeight);
-		assertTrue(logHandler.getLog(0).matches(expectedLog));
+		assertTrue(logs.get(0).matches(expectedLog));
 	}
 }

@@ -12,8 +12,8 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,10 +23,12 @@ import org.junit.jupiter.api.Test;
 class OptionHandlerTest {
 	@Nested
 	class TargetFilesHandlingTest {
+		List<String> logs = LogAppender.logs;
 		Path base;
 
 		@BeforeEach
 		void setUp() throws Exception {
+			logs.clear();
 			base = DataManager.makeTestDir();
 
 			Files.createFile(base.resolve("a.pdf"));
@@ -172,13 +174,6 @@ class OptionHandlerTest {
 
 		@Test
 		void test_lOption() throws Exception {
-			// Setup
-			var logHandler = new LogHandler();
-			var logger = Logger.getLogger("");
-			for (var handler : logger.getHandlers()) {
-				logger.removeHandler(handler);
-			}
-			logger.addHandler(logHandler);
 			// Exercise
 			var sut = new OptionHandler("-l", base + "/a.pdf", base + "/dir1");
 			// Verify
@@ -189,11 +184,11 @@ class OptionHandlerTest {
 					base.resolve("dir1/dir2/漢.pdf"), base.resolve("dir1/dir2/漢_r.pdf"));
 			assertEquals(expected, sut.pdfMap());
 			assertTrue(sut.abort());
-			assertEquals(4, logHandler.getLogCount());
-			assertEquals(base + "/a.pdf -> " + base + "/a_r.pdf", logHandler.getLog(0));
-			assertEquals(base + "/dir1/b.pdf -> " + base + "/dir1/b_r.pdf", logHandler.getLog(1));
-			assertEquals(base + "/dir1/dir2/c.PDF -> " + base + "/dir1/dir2/c_r.PDF", logHandler.getLog(2));
-			assertEquals(base + "/dir1/dir2/漢.pdf -> " + base + "/dir1/dir2/漢_r.pdf", logHandler.getLog(3));
+			assertEquals(4, logs.size());
+			assertEquals(base + "/a.pdf -> " + base + "/a_r.pdf", logs.get(0));
+			assertEquals(base + "/dir1/b.pdf -> " + base + "/dir1/b_r.pdf", logs.get(1));
+			assertEquals(base + "/dir1/dir2/c.PDF -> " + base + "/dir1/dir2/c_r.PDF", logs.get(2));
+			assertEquals(base + "/dir1/dir2/漢.pdf -> " + base + "/dir1/dir2/漢_r.pdf", logs.get(3));
 		}
 
 		@Test

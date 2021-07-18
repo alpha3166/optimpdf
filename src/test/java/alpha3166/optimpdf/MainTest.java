@@ -6,28 +6,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Logger;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class MainTest {
+	List<String> logs = LogAppender.logs;
 	Path base;
 	Main sut;
-	LogHandler logHandler;
 
 	@BeforeEach
 	void setUp() throws Exception {
+		logs.clear();
 		base = DataManager.makeTestDir();
 		sut = new Main();
-		logHandler = new LogHandler();
-		var logger = Logger.getLogger("");
-		for (var handler : logger.getHandlers()) {
-			logger.removeHandler(handler);
-		}
-		logger.addHandler(logHandler);
-		sut.logger = logger;
 	}
 
 	@AfterEach
@@ -44,10 +38,10 @@ class MainTest {
 		sut.execute(base + "/src.pdf");
 		// Verify
 		assertTrue(Files.isRegularFile(base.resolve("src_r.pdf")));
-		assertEquals(3, logHandler.getLogCount());
-		assertEquals(base + "/src.pdf", logHandler.getLog(0));
-		assertTrue(logHandler.getLog(1).matches("  1/1 480x640 \\d+K \\(fit 1024x1536\\) > 480x640 \\d+K \\d+%"));
-		assertEquals("  -> " + base + "/src_r.pdf", logHandler.getLog(2));
+		assertEquals(3, logs.size());
+		assertEquals(base + "/src.pdf", logs.get(0));
+		assertTrue(logs.get(1).matches("  1/1 480x640 \\d+K \\(fit 1024x1536\\) > 480x640 \\d+K \\d+%"));
+		assertEquals("  -> " + base + "/src_r.pdf", logs.get(2));
 	}
 
 	@Test
@@ -59,8 +53,8 @@ class MainTest {
 		sut.execute("-l", base + "/src.pdf");
 		// Verify
 		assertFalse(Files.exists(base.resolve("src_r.pdf")));
-		assertEquals(1, logHandler.getLogCount());
-		assertEquals(base + "/src.pdf -> " + base + "/src_r.pdf", logHandler.getLog(0));
+		assertEquals(1, logs.size());
+		assertEquals(base + "/src.pdf -> " + base + "/src_r.pdf", logs.get(0));
 	}
 
 	@Test
@@ -72,9 +66,9 @@ class MainTest {
 		sut.execute("-n", base + "/src.pdf");
 		// Verify
 		assertFalse(Files.exists(base.resolve("src_r.pdf")));
-		assertEquals(3, logHandler.getLogCount());
-		assertEquals(base + "/src.pdf", logHandler.getLog(0));
-		assertTrue(logHandler.getLog(1).matches("  1/1 480x640 \\d+K \\(fit 1024x1536\\) > 480x640 \\d+K \\d+%"));
-		assertEquals("  -> " + base + "/src_r.pdf", logHandler.getLog(2));
+		assertEquals(3, logs.size());
+		assertEquals(base + "/src.pdf", logs.get(0));
+		assertTrue(logs.get(1).matches("  1/1 480x640 \\d+K \\(fit 1024x1536\\) > 480x640 \\d+K \\d+%"));
+		assertEquals("  -> " + base + "/src_r.pdf", logs.get(2));
 	}
 }

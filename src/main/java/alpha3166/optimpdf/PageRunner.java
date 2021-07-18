@@ -1,9 +1,13 @@
 package alpha3166.optimpdf;
 
 import java.io.IOException;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PageRunner implements Runnable {
+	Logger logger = LoggerFactory.getLogger(getClass());
+
 	private PdfHandler pdfHandler;
 	private int page;
 	private OptionHandler opt;
@@ -17,7 +21,6 @@ public class PageRunner implements Runnable {
 	@Override
 	public void run() {
 		try {
-			var logger = Logger.getLogger("");
 			var log = new StringBuilder();
 			log.append(String.format("  %d/%d", page, pdfHandler.getNumberOfPages()));
 

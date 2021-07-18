@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE logback>
+<configuration>
+	<appender name="JUNIT" class="alpha3166.optimpdf.LogAppender" />
+
+	<!-- Suppress "DCTDecode filter decoding into the bit map is not supported. 
+		The stream data would be left in JPEG baseline format" -->
+	<logger name="com.itextpdf.kernel.pdf.filters.DctDecodeFilter"
+		level="WARN" />
+
+	<root>
+		<appender-ref ref="JUNIT" />
+	</root>
+</configuration>

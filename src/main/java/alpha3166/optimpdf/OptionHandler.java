@@ -13,14 +13,17 @@ import java.util.BitSet;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.logging.Logger;
 
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OptionHandler {
+	Logger logger = LoggerFactory.getLogger(getClass());
+
 	private boolean abort;
 	private Map<Path, Path> pdfMap;
 	private boolean forceOverwrite;
@@ -122,7 +125,6 @@ public class OptionHandler {
 
 		// Handle -l
 		if (cmd.hasOption("l")) {
-			var logger = Logger.getLogger("");
 			pdfMap.entrySet().stream().forEach(e -> logger.info(e.getKey() + " -> " + e.getValue()));
 			abort = true;
 			return;
