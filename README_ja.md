@@ -47,7 +47,3 @@ Git、Java (11以降)、Maven、ImageMagick (6以降) をインストールし�
     git clone https://github.com/alpha3166/optimpdf
     cd optimpdf
     mvn package
-
-## DockerでOptimPDFを使うには
-
-[docker/optimpdf_run](docker/optimpdf_run)ディレクトリ内の[README.md](docker/optimpdf_run/README.md)を参照してください。

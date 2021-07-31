@@ -4,9 +4,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: optimpdf:dev
+    image: optimpdf-dev
     user: 1000:1000
     volumes:
       - ${HOME}/.m2:/home/me/.m2
-      - ../..:/workspace
-    working_dir: /workspace
+      - ../..:/optimpdf
+    working_dir: /optimpdf

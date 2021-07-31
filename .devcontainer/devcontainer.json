@@ -2,7 +2,7 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.183.0/containers/docker-existing-docker-compose
 // If you want to run as a non-root user in the container, see .devcontainer/docker-compose.yml.
 {
-	"name": "OptimPDF",
+	// "name": "Existing Docker Compose (Extend)",
 
 	// Update the 'dockerComposeFile' list if you have more compose files or use different names.
 	// The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
@@ -17,21 +17,23 @@
 
 	// The optional 'workspaceFolder' property is the path VS Code should open by default when
 	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
-	"workspaceFolder": "/workspace",
+	"workspaceFolder": "/optimpdf",
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": {},
 
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
-		// Java Extension Pack
-		"vscjava.vscode-java-pack",
-		// markdownlint
-		"DavidAnson.vscode-markdownlint",
 		// Docker
 		"ms-azuretools.vscode-docker",
+		// markdownlint
+		"DavidAnson.vscode-markdownlint",
+		// Java Extension Pack
+		"vscjava.vscode-java-pack",
 		// Dependency Analytics
-		"redhat.fabric8-analytics"
+		"redhat.fabric8-analytics",
+		// XML Tools
+		"dotjoshjohnson.xml"
 	]
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
