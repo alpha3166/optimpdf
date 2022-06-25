@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:alpine
+FROM eclipse-temurin:11-alpine
 RUN addgroup -g 1000 me && \
     adduser -u 1000 -G me -D me && \
     addgroup me wheel
