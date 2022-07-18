@@ -14,12 +14,10 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import picocli.CommandLine;
 
 public class OptionHandler {
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -38,41 +36,21 @@ public class OptionHandler {
 	private boolean quiet;
 	private int numberOfThreads;
 
-	public OptionHandler(String... args) throws IOException, ParseException {
-		var options = new Options();
-		options.addOption("h", "display this help and exit");
-		options.addOption("s", true, "output file suffix (Default: _r)");
-		options.addOption("d", true, "output directory");
-		options.addOption("o", true, "output file name (for single input only). disable -d");
-		options.addOption("u", "process only when the source PDF is newer than the"
-				+ " destination PDF or when the destination PDF is missing. enable -f");
-		options.addOption("l", "display the list of PDFs to be processed and exit");
-		options.addOption("f", "overwrite output file");
-		options.addOption("p", true, "process specified pages only (eg: 1,3-5)");
-		options.addOption("x", true, "output screen size (Default: 1536x2048)");
-		options.addOption("w", true, "double-page size threshold. halve output screen"
-				+ " size if source JPEG is smaller than this (Default: 2539)");
-		options.addOption("Q", true, "JPEG quality (Default: 50)");
-		options.addOption("b", true, "bleach specified pages (eg: 1,3-5 or all)");
-		options.addOption("n", "dry-run (skip saving new PDFs)");
-		options.addOption("q", "suppress displaying info of each page");
-		options.addOption("t", true, "number of threads to use (Default: Number of CPU cores)");
-
+	public OptionHandler(String... args) throws IOException {
 		// Parse
-		var cmd = new DefaultParser().parse(options, args);
+		var cmd = CommandLine.populateCommand(new OptionParser(), args);
 
 		// Handle -h
-		if (cmd.hasOption("h")) {
-			new HelpFormatter().printHelp("java -jar OPTIMPDF_JAR [OPTION]... PDF_OR_DIR...",
-					"Optimizes PDFs for handheld devices", options, null);
+		if (cmd.help) {
+			CommandLine.usage(cmd, System.out);
 			abort = true;
 			return;
 		}
 
 		// Handle arguments
 		var pdfSet = new TreeSet<Path>();
-		for (var arg : cmd.getArgs()) {
-			Files.walkFileTree(Paths.get(arg), new SimpleFileVisitor<Path>() {
+		for (var arg : cmd.paths) {
+			Files.walkFileTree(arg, new SimpleFileVisitor<Path>() {
 				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
 					if (file.getFileName().toString().toLowerCase().endsWith(".pdf")) {
@@ -85,7 +63,7 @@ public class OptionHandler {
 
 		// Make pdfMap with handling -s
 		pdfMap = new TreeMap<>();
-		var suffix = cmd.getOptionValue("s", "_r");
+		var suffix = cmd.suffix;
 		for (var pdf : pdfSet) {
 			var newPdfName = pdf.getFileName().toString().replaceFirst("(\\.\\w+)?$", suffix + "$0");
 			var newPdf = pdf.resolveSibling(newPdfName);
@@ -93,25 +71,25 @@ public class OptionHandler {
 		}
 
 		// Handle -d
-		if (cmd.hasOption("d")) {
-			var outDir = Paths.get(cmd.getOptionValue("d"));
+		if (cmd.directory != null) {
+			var outDir = Paths.get(cmd.directory);
 			if (!Files.isDirectory(outDir)) {
-				throw new NoSuchFileException("-d " + cmd.getOptionValue("d"));
+				throw new NoSuchFileException("-d " + cmd.directory);
 			}
 			pdfMap.replaceAll((k, v) -> outDir.resolve(v.getFileName()));
 		}
 
 		// Handle -o
-		if (cmd.hasOption("o")) {
+		if (cmd.outputFile != null) {
 			if (pdfMap.size() > 1) {
 				throw new IllegalArgumentException("-o is for single input only");
 			}
-			var newPdf = Paths.get(cmd.getOptionValue("o"));
+			var newPdf = Paths.get(cmd.outputFile);
 			pdfMap.replaceAll((k, v) -> newPdf);
 		}
 
 		// Handle -u
-		if (cmd.hasOption("u")) {
+		if (cmd.update) {
 			forceOverwrite = true;
 			pdfMap.entrySet().removeIf(entry -> {
 				try {
@@ -124,15 +102,15 @@ public class OptionHandler {
 		}
 
 		// Handle -l
-		if (cmd.hasOption("l")) {
+		if (cmd.list) {
 			pdfMap.entrySet().stream().forEach(e -> logger.info(e.getKey() + " -> " + e.getValue()));
 			abort = true;
 			return;
 		}
 
 		// Handle -f
-		if (!cmd.hasOption("u")) {
-			forceOverwrite = cmd.hasOption("f");
+		if (!cmd.update) {
+			forceOverwrite = cmd.force;
 			if (!forceOverwrite) {
 				for (var newPdf : pdfMap.values()) {
 					if (Files.exists(newPdf)) {
@@ -143,19 +121,18 @@ public class OptionHandler {
 		}
 
 		// Handle -p
-		if (cmd.hasOption("p")) {
+		if (cmd.pages != null) {
 			try {
-				targetPages = parsePageDesignator(cmd.getOptionValue("p"));
+				targetPages = parsePageDesignator(cmd.pages);
 			} catch (Exception e) {
-				throw new IllegalArgumentException("-p " + cmd.getOptionValue("p"), e);
+				throw new IllegalArgumentException("-p " + cmd.pages, e);
 			}
 		}
 
 		// Handle -x
-		var screenSize = cmd.getOptionValue("x", "1536x2048");
-		var tokens = screenSize.split("x", -1);
+		var tokens = cmd.screenSize.split("x", -1);
 		if (tokens.length != 2) {
-			throw new IllegalArgumentException("-x " + cmd.getOptionValue("x"));
+			throw new IllegalArgumentException("-x " + cmd.screenSize);
 		}
 		try {
 			screenWidth = Integer.parseInt(tokens[0]);
@@ -167,48 +144,39 @@ public class OptionHandler {
 				screenHeight = tmp;
 			}
 		} catch (Exception e) {
-			throw new IllegalArgumentException("-x " + cmd.getOptionValue("x"), e);
+			throw new IllegalArgumentException("-x " + cmd.screenSize, e);
 		}
 
 		// Handle -w
-		try {
-			doublePageThreshold = Integer.parseInt(cmd.getOptionValue("w", "2539"));
-		} catch (Exception e) {
-			throw new IllegalArgumentException("-w " + cmd.getOptionValue("w"), e);
-		}
+		doublePageThreshold = cmd.doublePageThreshold;
 
 		// Handle -Q
-		try {
-			quality = Integer.parseInt(cmd.getOptionValue("Q", "50"));
-		} catch (Exception e) {
-			throw new IllegalArgumentException("-Q " + cmd.getOptionValue("Q"), e);
-		}
+		quality = cmd.quality;
 
 		// Handle -b
-		if (cmd.hasOption("b")) {
+		if (cmd.bleachPages != null) {
 			try {
-				if (cmd.getOptionValue("b").toLowerCase().equals("all")) {
+				if (cmd.bleachPages.toLowerCase().equals("all")) {
 					bleachAll = true;
 				} else {
-					bleachPages = parsePageDesignator(cmd.getOptionValue("b"));
+					bleachPages = parsePageDesignator(cmd.bleachPages);
 				}
 			} catch (Exception e) {
-				throw new IllegalArgumentException("-b " + cmd.getOptionValue("b"), e);
+				throw new IllegalArgumentException("-b " + cmd.bleachPages, e);
 			}
 		}
 
 		// Handle -n
-		dryRun = cmd.hasOption("n");
+		dryRun = cmd.dryRun;
 
 		// Handle -q
-		quiet = cmd.hasOption("q");
+		quiet = cmd.quiet;
 
 		// Handle -t
-		try {
-			var numberOfCores = Runtime.getRuntime().availableProcessors();
-			numberOfThreads = Integer.parseInt(cmd.getOptionValue("t", numberOfCores + ""));
-		} catch (Exception e) {
-			throw new IllegalArgumentException("-t " + cmd.getOptionValue("t"), e);
+		if (cmd.numberOfThreads == null) {
+			numberOfThreads = Runtime.getRuntime().availableProcessors();
+		} else {
+			numberOfThreads = cmd.numberOfThreads;
 		}
 	}
 

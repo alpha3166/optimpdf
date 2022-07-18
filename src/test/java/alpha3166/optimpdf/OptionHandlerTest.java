@@ -20,6 +20,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import picocli.CommandLine.ParameterException;
+
 class OptionHandlerTest {
 	@Nested
 	class TargetFilesHandlingTest {
@@ -291,6 +293,12 @@ class OptionHandlerTest {
 		}
 
 		@Test
+		void test_wOption_Errors() throws Exception {
+			// Exercise & Verify
+			assertThrows(ParameterException.class, () -> new OptionHandler("-w", "a"));
+		}
+
+		@Test
 		void test_QOption_Default() throws Exception {
 			// Exercise
 			var sut = new OptionHandler();
@@ -304,6 +312,12 @@ class OptionHandlerTest {
 			var sut = new OptionHandler("-Q", "85");
 			// Verify
 			assertEquals(85, sut.quality());
+		}
+
+		@Test
+		void test_QOption_Errors() throws Exception {
+			// Exercise & Verify
+			assertThrows(ParameterException.class, () -> new OptionHandler("-Q", "a"));
 		}
 
 		@Test
