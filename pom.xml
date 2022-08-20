@@ -60,7 +60,7 @@
 						<configuration>
 							<archive>
 								<manifest>
-									<mainClass>alpha3166.optimpdf.Main</mainClass>
+									<mainClass>alpha3166.optimpdf.reduce.Main</mainClass>
 								</manifest>
 							</archive>
 							<descriptorRefs>

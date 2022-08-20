@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE logback>
 <configuration>
-	<appender name="JUNIT" class="alpha3166.optimpdf.LogAppender" />
+	<appender name="JUNIT" class="alpha3166.optimpdf.reduce.LogAppender" />
 
 	<!-- Suppress "DCTDecode filter decoding into the bit map is not supported. 
 		The stream data would be left in JPEG baseline format" -->

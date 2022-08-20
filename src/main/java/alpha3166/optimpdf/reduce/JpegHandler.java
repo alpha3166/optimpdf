@@ -1,4 +1,4 @@
-package alpha3166.optimpdf;
+package alpha3166.optimpdf.reduce;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;

@@ -1,4 +1,4 @@
-package alpha3166.optimpdf;
+package alpha3166.optimpdf.reduce;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
