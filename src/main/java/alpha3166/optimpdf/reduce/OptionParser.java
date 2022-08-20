@@ -2,11 +2,9 @@ package alpha3166.optimpdf.reduce;
 
 import java.nio.file.Path;
 
-import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "java -jar OPTIMPDF_JAR", description = "Optimizes PDFs for handheld devices")
 public class OptionParser {
 	@Option(names = "-h", usageHelp = true, description = "display this help and exit")
 	boolean help;

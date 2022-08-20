@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 
 import picocli.CommandLine;
 
-class MainTest {
+class ReduceMainTest {
 	List<String> logs = LogAppender.logs;
 	Path base;
-	Main sut;
+	ReduceMain sut;
 	CommandLine cmd;
 	StringWriter out;
 	StringWriter err;
@@ -28,7 +28,7 @@ class MainTest {
 	void setUp() throws Exception {
 		logs.clear();
 		base = DataManager.makeTestDir();
-		sut = new Main();
+		sut = new ReduceMain();
 		cmd = new CommandLine(sut);
 		out = new StringWriter();
 		cmd.setOut(new PrintWriter(out));

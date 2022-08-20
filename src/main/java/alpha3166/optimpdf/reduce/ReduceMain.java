@@ -9,18 +9,15 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 
-public class Main implements Callable<Integer> {
+@Command(name = "reduce", description = "Optimizes PDFs for handheld devices")
+public class ReduceMain implements Callable<Integer> {
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Mixin
 	OptionParser arg;
-
-	public static void main(String... args) {
-		System.exit(new CommandLine(new Main()).execute(args));
-	}
 
 	@Override
 	public Integer call() throws Exception {
