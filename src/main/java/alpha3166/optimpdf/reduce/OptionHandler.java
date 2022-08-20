@@ -17,8 +17,6 @@ import java.util.TreeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import picocli.CommandLine;
-
 public class OptionHandler {
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -36,21 +34,11 @@ public class OptionHandler {
 	private boolean quiet;
 	private int numberOfThreads;
 
-	public OptionHandler(String... args) throws IOException {
-		// Parse
-		var cmd = CommandLine.populateCommand(new OptionParser(), args);
-
-		// Handle -h
-		if (cmd.help) {
-			CommandLine.usage(cmd, System.out);
-			abort = true;
-			return;
-		}
-
+	public OptionHandler(OptionParser arg) throws IOException {
 		// Handle arguments
 		var pdfSet = new TreeSet<Path>();
-		for (var arg : cmd.paths) {
-			Files.walkFileTree(arg, new SimpleFileVisitor<Path>() {
+		for (var path : arg.paths) {
+			Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
 				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
 					if (file.getFileName().toString().toLowerCase().endsWith(".pdf")) {
@@ -63,7 +51,7 @@ public class OptionHandler {
 
 		// Make pdfMap with handling -s
 		pdfMap = new TreeMap<>();
-		var suffix = cmd.suffix;
+		var suffix = arg.suffix;
 		for (var pdf : pdfSet) {
 			var newPdfName = pdf.getFileName().toString().replaceFirst("(\\.\\w+)?$", suffix + "$0");
 			var newPdf = pdf.resolveSibling(newPdfName);
@@ -71,25 +59,25 @@ public class OptionHandler {
 		}
 
 		// Handle -d
-		if (cmd.directory != null) {
-			var outDir = Paths.get(cmd.directory);
+		if (arg.directory != null) {
+			var outDir = Paths.get(arg.directory);
 			if (!Files.isDirectory(outDir)) {
-				throw new NoSuchFileException("-d " + cmd.directory);
+				throw new NoSuchFileException("-d " + arg.directory);
 			}
 			pdfMap.replaceAll((k, v) -> outDir.resolve(v.getFileName()));
 		}
 
 		// Handle -o
-		if (cmd.outputFile != null) {
+		if (arg.outputFile != null) {
 			if (pdfMap.size() > 1) {
 				throw new IllegalArgumentException("-o is for single input only");
 			}
-			var newPdf = Paths.get(cmd.outputFile);
+			var newPdf = Paths.get(arg.outputFile);
 			pdfMap.replaceAll((k, v) -> newPdf);
 		}
 
 		// Handle -u
-		if (cmd.update) {
+		if (arg.update) {
 			forceOverwrite = true;
 			pdfMap.entrySet().removeIf(entry -> {
 				try {
@@ -102,15 +90,15 @@ public class OptionHandler {
 		}
 
 		// Handle -l
-		if (cmd.list) {
+		if (arg.list) {
 			pdfMap.entrySet().stream().forEach(e -> logger.info(e.getKey() + " -> " + e.getValue()));
 			abort = true;
 			return;
 		}
 
 		// Handle -f
-		if (!cmd.update) {
-			forceOverwrite = cmd.force;
+		if (!arg.update) {
+			forceOverwrite = arg.force;
 			if (!forceOverwrite) {
 				for (var newPdf : pdfMap.values()) {
 					if (Files.exists(newPdf)) {
@@ -121,18 +109,18 @@ public class OptionHandler {
 		}
 
 		// Handle -p
-		if (cmd.pages != null) {
+		if (arg.pages != null) {
 			try {
-				targetPages = parsePageDesignator(cmd.pages);
+				targetPages = parsePageDesignator(arg.pages);
 			} catch (Exception e) {
-				throw new IllegalArgumentException("-p " + cmd.pages, e);
+				throw new IllegalArgumentException("-p " + arg.pages, e);
 			}
 		}
 
 		// Handle -x
-		var tokens = cmd.screenSize.split("x", -1);
+		var tokens = arg.screenSize.split("x", -1);
 		if (tokens.length != 2) {
-			throw new IllegalArgumentException("-x " + cmd.screenSize);
+			throw new IllegalArgumentException("-x " + arg.screenSize);
 		}
 		try {
 			screenWidth = Integer.parseInt(tokens[0]);
@@ -144,39 +132,39 @@ public class OptionHandler {
 				screenHeight = tmp;
 			}
 		} catch (Exception e) {
-			throw new IllegalArgumentException("-x " + cmd.screenSize, e);
+			throw new IllegalArgumentException("-x " + arg.screenSize, e);
 		}
 
 		// Handle -w
-		doublePageThreshold = cmd.doublePageThreshold;
+		doublePageThreshold = arg.doublePageThreshold;
 
 		// Handle -Q
-		quality = cmd.quality;
+		quality = arg.quality;
 
 		// Handle -b
-		if (cmd.bleachPages != null) {
+		if (arg.bleachPages != null) {
 			try {
-				if (cmd.bleachPages.toLowerCase().equals("all")) {
+				if (arg.bleachPages.toLowerCase().equals("all")) {
 					bleachAll = true;
 				} else {
-					bleachPages = parsePageDesignator(cmd.bleachPages);
+					bleachPages = parsePageDesignator(arg.bleachPages);
 				}
 			} catch (Exception e) {
-				throw new IllegalArgumentException("-b " + cmd.bleachPages, e);
+				throw new IllegalArgumentException("-b " + arg.bleachPages, e);
 			}
 		}
 
 		// Handle -n
-		dryRun = cmd.dryRun;
+		dryRun = arg.dryRun;
 
 		// Handle -q
-		quiet = cmd.quiet;
+		quiet = arg.quiet;
 
 		// Handle -t
-		if (cmd.numberOfThreads == null) {
+		if (arg.numberOfThreads == null) {
 			numberOfThreads = Runtime.getRuntime().availableProcessors();
 		} else {
-			numberOfThreads = cmd.numberOfThreads;
+			numberOfThreads = arg.numberOfThreads;
 		}
 	}
 

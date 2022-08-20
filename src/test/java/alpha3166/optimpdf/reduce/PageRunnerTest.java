@@ -10,6 +10,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import picocli.CommandLine;
+
 class PageRunnerTest {
 	List<String> logs = LogAppender.logs;
 	Path base;
@@ -50,7 +52,8 @@ class PageRunnerTest {
 		var jpeg = DataManager.generateJpeg(srcWidth, srcHeight);
 		DataManager.generatePdf(base.resolve("src.pdf"), jpeg);
 		var pdfHandler = new PdfHandler(base.resolve("src.pdf"));
-		var optHandler = new OptionHandler(base + "/src.pdf");
+		var arg = parse(base + "/src.pdf");
+		var optHandler = new OptionHandler(arg);
 		// Exercise
 		var pageRunner = new PageRunner(pdfHandler, 1, optHandler);
 		pageRunner.run();
@@ -62,5 +65,9 @@ class PageRunnerTest {
 		var expectedLog = String.format("  1/1 %dx%d \\d+K \\(fit \\d+x\\d+\\) > %dx%d \\d+K \\d+%%", //
 				srcWidth, srcHeight, expectedWidth, expectedHeight);
 		assertTrue(logs.get(0).matches(expectedLog));
+	}
+
+	OptionParser parse(String... args) {
+		return CommandLine.populateCommand(new OptionParser(), args);
 	}
 }

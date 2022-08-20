@@ -2,24 +2,31 @@ package alpha3166.optimpdf.reduce;
 
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Main {
+import picocli.CommandLine;
+import picocli.CommandLine.Mixin;
+
+public class Main implements Callable<Integer> {
 	Logger logger = LoggerFactory.getLogger(getClass());
 
-	public static void main(String... args) throws Exception {
-		var self = new Main();
-		self.execute(args);
+	@Mixin
+	OptionParser arg;
+
+	public static void main(String... args) {
+		System.exit(new CommandLine(new Main()).execute(args));
 	}
 
-	public void execute(String... args) throws Exception {
-		var opt = new OptionHandler(args);
+	@Override
+	public Integer call() throws Exception {
+		var opt = new OptionHandler(arg);
 		if (opt.abort()) {
-			return;
+			return 0;
 		}
 		var pdfMap = opt.pdfMap();
 		for (var pdf : pdfMap.keySet()) {
@@ -42,5 +49,6 @@ public class Main {
 				logger.info("  -> " + newPdf);
 			}
 		}
+		return 0;
 	}
 }
