@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE logback>
 <configuration>
-	<appender name="JUNIT" class="alpha3166.optimpdf.reduce.LogAppender" />
+	<appender name="REDUCE" class="alpha3166.optimpdf.reduce.LogAppender" />
+	<appender name="ROTATE" class="alpha3166.optimpdf.rotate.LogAppender" />
 
 	<!-- Suppress "DCTDecode filter decoding into the bit map is not supported. 
 		The stream data would be left in JPEG baseline format" -->
@@ -9,6 +10,7 @@
 		level="WARN" />
 
 	<root>
-		<appender-ref ref="JUNIT" />
+		<appender-ref ref="REDUCE" />
+		<appender-ref ref="ROTATE" />
 	</root>
 </configuration>
