@@ -4,11 +4,12 @@ import java.util.concurrent.Callable;
 
 import alpha3166.optimpdf.reduce.ReduceMain;
 import alpha3166.optimpdf.rotate.RotateMain;
+import alpha3166.optimpdf.unzip.UnzipMain;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(name = "java -jar OPTIMPDF_JAR", version = "OptimPDF 2.0.0", subcommands = {
-    ReduceMain.class, RotateMain.class }, mixinStandardHelpOptions = true)
+    ReduceMain.class, RotateMain.class, UnzipMain.class }, mixinStandardHelpOptions = true)
 public class Main implements Callable<Integer> {
   public static void main(String... args) {
     System.exit(new CommandLine(new Main()).execute(args));

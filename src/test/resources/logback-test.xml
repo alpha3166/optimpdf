@@ -3,6 +3,7 @@
 <configuration>
 	<appender name="REDUCE" class="alpha3166.optimpdf.reduce.LogAppender" />
 	<appender name="ROTATE" class="alpha3166.optimpdf.rotate.LogAppender" />
+	<appender name="UNZIP" class="alpha3166.optimpdf.unzip.LogAppender" />
 
 	<!-- Suppress "DCTDecode filter decoding into the bit map is not supported. 
 		The stream data would be left in JPEG baseline format" -->
@@ -12,5 +13,6 @@
 	<root>
 		<appender-ref ref="REDUCE" />
 		<appender-ref ref="ROTATE" />
+		<appender-ref ref="UNZIP" />
 	</root>
 </configuration>
