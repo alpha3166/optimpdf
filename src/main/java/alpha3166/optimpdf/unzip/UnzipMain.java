@@ -10,23 +10,23 @@ import picocli.CommandLine.Mixin;
 
 @Command(name = "unzip", description = "Create PDF from images in the Zip")
 public class UnzipMain implements Callable<Integer> {
-	Logger logger = LoggerFactory.getLogger(getClass());
+  Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Mixin
-	OptionParser arg;
+  @Mixin
+  OptionParser arg;
 
-	@Override
-	public Integer call() throws Exception {
-		var opt = new OptionHandler(arg);
-		var zipMap = opt.zipMap();
-		for (var zipPath : zipMap.keySet()) {
-			logger.info(zipPath.toString());
-			var pdfPath = zipMap.get(zipPath);
-			var zipHandler = new ZipHandler(zipPath);
-			var imagePathList = zipHandler.getImagePathList();
-			PdfHandler.createPdfFromImages(pdfPath, imagePathList, opt.isRightToLeft());
-			zipHandler.close();
-		}
-		return 0;
-	}
+  @Override
+  public Integer call() throws Exception {
+    var opt = new OptionHandler(arg);
+    var zipMap = opt.zipMap();
+    for (var zipPath : zipMap.keySet()) {
+      logger.info(zipPath.toString());
+      var pdfPath = zipMap.get(zipPath);
+      var zipHandler = new ZipHandler(zipPath);
+      var imagePathList = zipHandler.getImagePathList();
+      PdfHandler.createPdfFromImages(pdfPath, imagePathList, opt.isRightToLeft());
+      zipHandler.close();
+    }
+    return 0;
+  }
 }

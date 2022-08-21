@@ -9,37 +9,37 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class OptionHandler {
-	private Map<Path, Path> zipMap;
-	private boolean rightToLeft;
+  private Map<Path, Path> zipMap;
+  private boolean rightToLeft;
 
-	public OptionHandler(OptionParser arg) throws IOException {
-		// Handle arguments
-		zipMap = new TreeMap<>();
-		for (var zipPath : arg.paths) {
-			if (!Files.isRegularFile(zipPath)) {
-				throw new NoSuchFileException(zipPath.toString());
-			}
-			var pdfPath = Paths.get(zipPath.toString().replaceFirst("(\\.\\w+)?$", ".pdf"));
-			zipMap.put(zipPath, pdfPath);
-		}
+  public OptionHandler(OptionParser arg) throws IOException {
+    // Handle arguments
+    zipMap = new TreeMap<>();
+    for (var zipPath : arg.paths) {
+      if (!Files.isRegularFile(zipPath)) {
+        throw new NoSuchFileException(zipPath.toString());
+      }
+      var pdfPath = Paths.get(zipPath.toString().replaceFirst("(\\.\\w+)?$", ".pdf"));
+      zipMap.put(zipPath, pdfPath);
+    }
 
-		// Handle -d
-		if (arg.outDir != null) {
-			if (!Files.isDirectory(arg.outDir)) {
-				throw new NoSuchFileException(arg.outDir.toString());
-			}
-			zipMap.replaceAll((k, v) -> arg.outDir.resolve(v.getFileName()));
-		}
+    // Handle -d
+    if (arg.outDir != null) {
+      if (!Files.isDirectory(arg.outDir)) {
+        throw new NoSuchFileException(arg.outDir.toString());
+      }
+      zipMap.replaceAll((k, v) -> arg.outDir.resolve(v.getFileName()));
+    }
 
-		// Handle -r
-		rightToLeft = arg.rightToLeft;
-	}
+    // Handle -r
+    rightToLeft = arg.rightToLeft;
+  }
 
-	public Map<Path, Path> zipMap() {
-		return zipMap;
-	}
+  public Map<Path, Path> zipMap() {
+    return zipMap;
+  }
 
-	public boolean isRightToLeft() {
-		return rightToLeft;
-	}
+  public boolean isRightToLeft() {
+    return rightToLeft;
+  }
 }
