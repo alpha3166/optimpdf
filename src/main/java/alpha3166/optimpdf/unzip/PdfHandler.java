@@ -16,7 +16,8 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
 
 public class PdfHandler {
-  public static void createPdfFromImages(Path pdfPath, List<Path> imagePathList, boolean rightToLeft) throws IOException {
+  public static void createPdfFromImages(Path pdfPath, List<Path> imagePathList, boolean rightToLeft)
+      throws IOException {
     var pdfWriter = new PdfWriter(pdfPath.toFile());
     var pdfDoc = new PdfDocument(pdfWriter);
 

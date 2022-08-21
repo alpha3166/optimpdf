@@ -96,7 +96,7 @@ class ReduceMainTest {
     var exitCode = cmd.execute("-h", base + "/src.pdf");
     // Verify
     assertEquals(0, exitCode);
-    assertEquals("Usage:",  out.toString().substring(0, 6));
+    assertEquals("Usage:", out.toString().substring(0, 6));
     assertEquals(0, err.getBuffer().length());
     assertFalse(Files.exists(base.resolve("src_r.pdf")));
     assertEquals(0, logs.size());
@@ -112,7 +112,7 @@ class ReduceMainTest {
     // Verify
     assertEquals(2, exitCode);
     assertEquals(0, out.getBuffer().length());
-    assertEquals("Unknown option: '-X'",  err.toString().substring(0, 20));
+    assertEquals("Unknown option: '-X'", err.toString().substring(0, 20));
     assertFalse(Files.exists(base.resolve("src_r.pdf")));
     assertEquals(0, logs.size());
   }

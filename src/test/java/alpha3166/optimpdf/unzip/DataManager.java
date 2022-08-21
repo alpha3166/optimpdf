@@ -28,7 +28,8 @@ public class DataManager {
   public static void generateZip(Path path) throws IOException, URISyntaxException {
     Map<String, Object> env = new HashMap<>();
     env.put("create", "true");
-    // In case of Java 17, you can write simply as "FileSystems.newFileSystem(path, env)"
+    // In case of Java 17, you can write simply as "FileSystems.newFileSystem(path,
+    // env)"
     try (var zipFs = FileSystems.newFileSystem(URI.create("jar:file:" + path.toAbsolutePath()), env)) {
       writeImage(zipFs, "sample4.gif", "gif");
       Files.createDirectories(zipFs.getPath("dir1"));

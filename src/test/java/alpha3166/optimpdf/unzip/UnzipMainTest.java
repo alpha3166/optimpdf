@@ -78,6 +78,6 @@ class UnzipMainTest {
     // Verify
     assertEquals(2, exitCode);
     assertEquals(0, out.getBuffer().length());
-    assertEquals("Unknown option: '-X'",  err.toString().substring(0, 20));
+    assertEquals("Unknown option: '-X'", err.toString().substring(0, 20));
   }
 }
