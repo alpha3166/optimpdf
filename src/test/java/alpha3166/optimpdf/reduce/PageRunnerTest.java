@@ -2,29 +2,51 @@ package alpha3166.optimpdf.reduce;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 
-import picocli.CommandLine;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 
+@ExtendWith(MockitoExtension.class)
 class PageRunnerTest {
-  List<String> logs = LogAppender.logs;
+  @Mock
+  Appender<ILoggingEvent> mockAppender;
+  @Captor
+  ArgumentCaptor<ILoggingEvent> captor;
+
   Path base;
 
   @BeforeEach
   void setUp() throws Exception {
-    logs.clear();
+    var logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    logger.addAppender(mockAppender);
+
     base = DataManager.makeTestDir();
   }
 
   @AfterEach
   void tearDown() throws Exception {
     DataManager.removeDir(base);
+
+    var logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    logger.detachAppender(mockAppender);
   }
 
   @Test
@@ -51,23 +73,25 @@ class PageRunnerTest {
     // Setup
     var jpeg = DataManager.generateJpeg(srcWidth, srcHeight);
     DataManager.generatePdf(base.resolve("src.pdf"), jpeg);
-    var pdfHandler = new PdfHandler(base.resolve("src.pdf"));
-    var arg = parse(base + "/src.pdf");
-    var optHandler = new OptionHandler(arg);
+    var pdfHandler = new PdfHandler(base.resolve("src.pdf"), base.resolve("dest.pdf"));
     // Exercise
-    var pageRunner = new PageRunner(pdfHandler, 1, optHandler);
+    var pageRunner = new PageRunner(pdfHandler, 1, 1536, 2048, 2539, 50, false, false);
     pageRunner.run();
     // Verify
     var jpegHandler = new JpegHandler(pdfHandler.extractJpeg(1));
     assertEquals(expectedWidth, jpegHandler.getWidth());
     assertEquals(expectedHeight, jpegHandler.getHeight());
-    assertEquals(1, logs.size());
-    var expectedLog = String.format("  1/1 %dx%d \\d+K \\(fit \\d+x\\d+\\) > %dx%d \\d+K \\d+%%", //
+    var expectedLog = String.format("  1/1 %dx%d \\d+K \\(fit \\d+x\\d+\\) > %dx%d \\d+K \\d+%%",
         srcWidth, srcHeight, expectedWidth, expectedHeight);
-    assertTrue(logs.get(0).matches(expectedLog));
+    assertLogMatches(Level.INFO, expectedLog);
   }
 
-  OptionParser parse(String... args) {
-    return CommandLine.populateCommand(new OptionParser(), args);
+  void assertLogMatches(Level expectedLevel, String... expectedMessages) {
+    verify(mockAppender, times(expectedMessages.length)).doAppend(captor.capture());
+    var expectedLines = new LinkedList<>(Arrays.asList(expectedMessages));
+    for (var event : captor.getAllValues()) {
+      assertEquals(expectedLevel, event.getLevel());
+      assertTrue(event.getFormattedMessage().matches(expectedLines.removeFirst()));
+    }
   }
 }

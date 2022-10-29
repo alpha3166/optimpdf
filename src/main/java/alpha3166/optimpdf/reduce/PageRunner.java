@@ -10,12 +10,23 @@ public class PageRunner implements Runnable {
 
   private PdfHandler pdfHandler;
   private int page;
-  private OptionHandler opt;
+  private int screenWidth;
+  private int screenHeight;
+  private int doublePageThreshold;
+  private int jpegQuality;
+  private boolean bleach;
+  private boolean quiet;
 
-  public PageRunner(PdfHandler pdfHandler, int page, OptionHandler opt) {
+  public PageRunner(PdfHandler pdfHandler, int page, int screenWidth, int screenHeight, int doublePageThreshold,
+      int jpegQuality, boolean bleach, boolean quiet) {
     this.pdfHandler = pdfHandler;
     this.page = page;
-    this.opt = opt;
+    this.screenWidth = screenWidth;
+    this.screenHeight = screenHeight;
+    this.doublePageThreshold = doublePageThreshold;
+    this.jpegQuality = jpegQuality;
+    this.bleach = bleach;
+    this.quiet = quiet;
   }
 
   @Override
@@ -32,27 +43,26 @@ public class PageRunner implements Runnable {
 
       var maxWidth = 0;
       var maxHeight = 0;
-      if (width > opt.doublePageThreshold() || height > opt.doublePageThreshold()) {
+      if (width > doublePageThreshold || height > doublePageThreshold) {
         if (width < height) {
-          maxWidth = opt.screenWidth();
-          maxHeight = opt.screenHeight();
+          maxWidth = screenWidth;
+          maxHeight = screenHeight;
         } else {
-          maxWidth = opt.screenHeight();
-          maxHeight = opt.screenWidth();
+          maxWidth = screenHeight;
+          maxHeight = screenWidth;
         }
       } else {
         if (width < height) {
-          maxWidth = opt.screenHeight() / 2;
-          maxHeight = opt.screenWidth();
+          maxWidth = screenHeight / 2;
+          maxHeight = screenWidth;
         } else {
-          maxWidth = opt.screenWidth();
-          maxHeight = opt.screenHeight() / 2;
+          maxWidth = screenWidth;
+          maxHeight = screenHeight / 2;
         }
       }
-      var bleach = opt.isBleachPage(page);
       log.append(String.format(" (fit %dx%d%s)", maxWidth, maxHeight, bleach ? " bleach" : ""));
 
-      var newJpegHandler = jpegHandler.resize(opt.quality(), maxWidth, maxHeight, bleach);
+      var newJpegHandler = jpegHandler.resize(jpegQuality, maxWidth, maxHeight, bleach);
       var newJpegWidth = newJpegHandler.getWidth();
       var newJpegHeight = newJpegHandler.getHeight();
       var newJpegBytes = newJpegHandler.getBytes();
@@ -61,7 +71,7 @@ public class PageRunner implements Runnable {
 
       pdfHandler.replaceJpeg(page, newJpegBytes, newJpegWidth, newJpegHeight, newJpegIsGray);
 
-      if (!opt.isQuiet()) {
+      if (!quiet) {
         logger.info(log.toString());
       }
     } catch (IOException e) {

@@ -1,26 +1,43 @@
 package alpha3166.optimpdf.rotate;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 import picocli.CommandLine;
 
-public class RotateMainTest {
-  List<String> logs = LogAppender.logs;
+@ExtendWith(MockitoExtension.class)
+class RotateMainTest {
+  @Mock
+  Appender<ILoggingEvent> mockAppender;
+  @Captor
+  ArgumentCaptor<ILoggingEvent> captor;
+
   Path base;
   RotateMain sut;
   CommandLine cmd;
@@ -28,8 +45,10 @@ public class RotateMainTest {
   StringWriter err;
 
   @BeforeEach
-  public void beforeEach() throws Exception {
-    logs.clear();
+  void beforeEach() throws Exception {
+    var logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    logger.addAppender(mockAppender);
+
     base = DataManager.makeTestDir();
     sut = new RotateMain();
     cmd = new CommandLine(sut);
@@ -40,213 +59,240 @@ public class RotateMainTest {
   }
 
   @AfterEach
-  public void afterEach() throws Exception {
+  void afterEach() throws Exception {
     DataManager.removeDir(base);
+
+    var logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    logger.detachAppender(mockAppender);
   }
 
-  @Test
-  public void test_hOption() throws Exception {
-    // Exercise & Verify
-    assertDoesNotThrow(() -> cmd.execute("-h"));
-  }
+  //
+  // simple normal cases
+  //
 
   @Test
-  public void test_invalidOption() throws Exception {
+  void testHelp() throws Exception {
     // Exercise
-    var exitCode = cmd.execute("-X", base + "/ref.pdf", base + "/target.pdf");
+    var exitCode = cmd.execute("--help");
     // Verify
-    assertEquals(2, exitCode);
-    assertEquals(0, out.getBuffer().length());
-    assertEquals("Unknown option: '-X'", err.toString().substring(0, 20));
+    assertEquals(0, exitCode);
+    assertTrue(out.toString().startsWith("Usage: "));
   }
 
   @Test
-  public void test_onePdf() throws Exception {
-    // Exercise
-    var exitCode = cmd.execute(base + "/ref.pdf");
-    // Verify
-    assertEquals(2, exitCode);
-    assertEquals(0, out.getBuffer().length());
-    assertEquals("Missing required parameter: 'TARGET_PDF'", err.toString().split("\n")[0]);
-  }
-
-  @Test
-  public void test_refPdfDoesNotExist() throws Exception {
-    // Exercise
-    var exitCode = cmd.execute(base + "/ref.pdf", base + "/target.pdf");
-    // Verify
-    assertEquals(1, exitCode);
-    assertEquals(0, out.getBuffer().length());
-    assertEquals("java.nio.file.NoSuchFileException: " + base + "/ref.pdf", err.toString().split("\n")[0]);
-  }
-
-  @Test
-  public void test_refPdfIsDir() throws Exception {
+  void testDegreeDefault() throws Exception {
     // Setup
-    Files.createDirectory(base.resolve("ref.pdf"));
+    DataManager.generatePdf(base.resolve("src.pdf"), 0, 90, 180, 270);
     // Exercise
-    var exitCode = cmd.execute(base + "/ref.pdf", base + "/target.pdf");
+    var exitCode = cmd.execute("--force", base + "/src.pdf");
     // Verify
-    assertEquals(1, exitCode);
-    assertEquals(0, out.getBuffer().length());
-    assertEquals("java.nio.file.NoSuchFileException: " + base + "/ref.pdf", err.toString().split("\n")[0]);
-  }
-
-  @Test
-  public void test_targetPdfDoesNotExist() throws Exception {
-    // Setup
-    Files.createFile(base.resolve("ref.pdf"));
-    // Exercise
-    var exitCode = cmd.execute(base + "/ref.pdf", base + "/target.pdf");
-    // Verify
-    assertEquals(1, exitCode);
-    assertEquals(0, out.getBuffer().length());
-    assertEquals("java.nio.file.NoSuchFileException: " + base + "/target.pdf", err.toString().split("\n")[0]);
-  }
-
-  @Test
-  public void test_targetPdfIsDir() throws Exception {
-    // Setup
-    Files.createFile(base.resolve("ref.pdf"));
-    Files.createDirectory(base.resolve("target.pdf"));
-    // Exercise
-    var exitCode = cmd.execute(base + "/ref.pdf", base + "/target.pdf");
-    // Verify
-    assertEquals(1, exitCode);
-    assertEquals(0, out.getBuffer().length());
-    assertEquals("java.nio.file.NoSuchFileException: " + base + "/target.pdf", err.toString().split("\n")[0]);
-  }
-
-  @Test
-  public void test_refAndTargetPdfsAreSame() throws Exception {
-    // Setup
-    Files.createFile(base.resolve("ref.pdf"));
-    // Exercise
-    var exitCode = cmd.execute(base + "/ref.pdf", base + "/./ref.pdf");
-    // Verify
-    assertEquals(1, exitCode);
-    assertEquals(0, out.getBuffer().length());
-    assertEquals("java.lang.IllegalArgumentException: Reference and target PDFs are the same",
-        err.toString().split("\n")[0]);
-  }
-
-  @Test
-  public void test_numberOfPagesDiffer() throws Exception {
-    // Setup
-    DataManager.generatePdf(base.resolve("ref.pdf"), 0);
-    DataManager.generatePdf(base.resolve("target.pdf"), 0, 90);
-    // Exercise
-    var exitCode = cmd.execute(base + "/ref.pdf", base + "/target.pdf");
-    // Verify
-    assertEquals(1, exitCode);
-    assertEquals(0, out.getBuffer().length());
-    assertEquals("java.lang.RuntimeException: The number of pages differs: 1 vs 2", err.toString().split("\n")[0]);
-  }
-
-  @Test
-  public void test_noDiff() throws Exception {
-    // Setup
-    DataManager.generatePdf(base.resolve("ref.pdf"), 0, 90, 180, 270);
-    DataManager.generatePdf(base.resolve("target.pdf"), 0, 90, 180, 270);
-    // Exercise
-    cmd.execute(base + "/ref.pdf", base + "/target.pdf");
-    // Verify
-    assertEquals(1, logs.size());
-    assertEquals(base + "/target.pdf", logs.get(0));
-    try (var resultPdf = new PdfDocument(new PdfReader(base + "/target.pdf"))) {
+    assertEquals(0, exitCode);
+    try (var resultPdf = new PdfDocument(new PdfReader(base + "/src.pdf"))) {
       assertEquals(0, resultPdf.getPage(1).getRotation());
-      assertEquals(90, resultPdf.getPage(2).getRotation());
-      assertEquals(180, resultPdf.getPage(3).getRotation());
-      assertEquals(270, resultPdf.getPage(4).getRotation());
-    }
-  }
-
-  @Test
-  public void test_allPagesDiffer() throws Exception {
-    // Setup
-    DataManager.generatePdf(base.resolve("ref.pdf"), 0, 90, 180, 270);
-    DataManager.generatePdf(base.resolve("target.pdf"), 90, 180, 270, 0);
-    // Exercise
-    cmd.execute(base + "/ref.pdf", base + "/target.pdf");
-    // Verify
-    assertEquals(5, logs.size());
-    assertEquals(base + "/target.pdf", logs.get(0));
-    assertEquals("  p1: 90 -> 0", logs.get(1));
-    assertEquals("  p2: 180 -> 90", logs.get(2));
-    assertEquals("  p3: 270 -> 180", logs.get(3));
-    assertEquals("  p4: 0 -> 270", logs.get(4));
-    try (var resultPdf = new PdfDocument(new PdfReader(base + "/target.pdf"))) {
-      assertEquals(90, resultPdf.getPage(1).getRotation());
-      assertEquals(180, resultPdf.getPage(2).getRotation());
-      assertEquals(270, resultPdf.getPage(3).getRotation());
+      assertEquals(0, resultPdf.getPage(2).getRotation());
+      assertEquals(0, resultPdf.getPage(3).getRotation());
       assertEquals(0, resultPdf.getPage(4).getRotation());
     }
+    assertLogMatches(Level.INFO,
+        base + "/src.pdf",
+        "  p2: 90 -> 0",
+        "  p3: 180 -> 0",
+        "  p4: 270 -> 0",
+        "  -> " + base + "/src.pdf");
   }
 
   @Test
-  public void test_fOptionWithNoDiff() throws Exception {
+  void testDegree0() throws Exception {
     // Setup
-    DataManager.generatePdf(base.resolve("ref.pdf"), 0, 90, 180, 270);
-    DataManager.generatePdf(base.resolve("target.pdf"), 0, 90, 180, 270);
+    DataManager.generatePdf(base.resolve("src.pdf"), 0, 90, 180, 270);
     // Exercise
-    cmd.execute("-f", base + "/ref.pdf", base + "/target.pdf");
+    var exitCode = cmd.execute("--degree", "0", "--force", base + "/src.pdf");
     // Verify
-    assertEquals(1, logs.size());
-    assertEquals(base + "/target.pdf", logs.get(0));
-    try (var resultPdf = new PdfDocument(new PdfReader(base + "/target.pdf"))) {
+    assertEquals(0, exitCode);
+    try (var resultPdf = new PdfDocument(new PdfReader(base + "/src.pdf"))) {
       assertEquals(0, resultPdf.getPage(1).getRotation());
+      assertEquals(0, resultPdf.getPage(2).getRotation());
+      assertEquals(0, resultPdf.getPage(3).getRotation());
+      assertEquals(0, resultPdf.getPage(4).getRotation());
+    }
+    assertLogMatches(Level.INFO,
+        base + "/src.pdf",
+        "  p2: 90 -> 0",
+        "  p3: 180 -> 0",
+        "  p4: 270 -> 0",
+        "  -> " + base + "/src.pdf");
+  }
+
+  @Test
+  void testDegree90() throws Exception {
+    // Setup
+    DataManager.generatePdf(base.resolve("src.pdf"), 0, 90, 180, 270);
+    // Exercise
+    var exitCode = cmd.execute("--degree", "90", "--force", base + "/src.pdf");
+    // Verify
+    assertEquals(0, exitCode);
+    try (var resultPdf = new PdfDocument(new PdfReader(base + "/src.pdf"))) {
+      assertEquals(90, resultPdf.getPage(1).getRotation());
       assertEquals(90, resultPdf.getPage(2).getRotation());
+      assertEquals(90, resultPdf.getPage(3).getRotation());
+      assertEquals(90, resultPdf.getPage(4).getRotation());
+    }
+    assertLogMatches(Level.INFO,
+        base + "/src.pdf",
+        "  p1: 0 -> 90",
+        "  p3: 180 -> 90",
+        "  p4: 270 -> 90",
+        "  -> " + base + "/src.pdf");
+  }
+
+  @Test
+  void testDegree180() throws Exception {
+    // Setup
+    DataManager.generatePdf(base.resolve("src.pdf"), 0, 90, 180, 270);
+    // Exercise
+    var exitCode = cmd.execute("--degree", "180", "--force", base + "/src.pdf");
+    // Verify
+    assertEquals(0, exitCode);
+    try (var resultPdf = new PdfDocument(new PdfReader(base + "/src.pdf"))) {
+      assertEquals(180, resultPdf.getPage(1).getRotation());
+      assertEquals(180, resultPdf.getPage(2).getRotation());
       assertEquals(180, resultPdf.getPage(3).getRotation());
+      assertEquals(180, resultPdf.getPage(4).getRotation());
+    }
+    assertLogMatches(Level.INFO,
+        base + "/src.pdf",
+        "  p1: 0 -> 180",
+        "  p2: 90 -> 180",
+        "  p4: 270 -> 180",
+        "  -> " + base + "/src.pdf");
+  }
+
+  @Test
+  void testDegree270() throws Exception {
+    // Setup
+    DataManager.generatePdf(base.resolve("src.pdf"), 0, 90, 180, 270);
+    // Exercise
+    var exitCode = cmd.execute("--degree", "270", "--force", base + "/src.pdf");
+    // Verify
+    assertEquals(0, exitCode);
+    try (var resultPdf = new PdfDocument(new PdfReader(base + "/src.pdf"))) {
+      assertEquals(270, resultPdf.getPage(1).getRotation());
+      assertEquals(270, resultPdf.getPage(2).getRotation());
+      assertEquals(270, resultPdf.getPage(3).getRotation());
       assertEquals(270, resultPdf.getPage(4).getRotation());
     }
+    assertLogMatches(Level.INFO,
+        base + "/src.pdf",
+        "  p1: 0 -> 270",
+        "  p2: 90 -> 270",
+        "  p3: 180 -> 270",
+        "  -> " + base + "/src.pdf");
   }
 
   @Test
-  public void test_fOptionWithAllPagesDiffer() throws Exception {
+  void testRefPdf() throws Exception {
     // Setup
     DataManager.generatePdf(base.resolve("ref.pdf"), 0, 90, 180, 270);
     DataManager.generatePdf(base.resolve("target.pdf"), 90, 180, 270, 0);
     // Exercise
-    cmd.execute("-f", base + "/ref.pdf", base + "/target.pdf");
+    var exitCode = cmd.execute("--ref-pdf", base + "/ref.pdf", "--force", base + "/target.pdf");
     // Verify
-    assertEquals(5, logs.size());
-    assertEquals(base + "/target.pdf", logs.get(0));
-    assertEquals("  p1: 90 -> 0", logs.get(1));
-    assertEquals("  p2: 180 -> 90", logs.get(2));
-    assertEquals("  p3: 270 -> 180", logs.get(3));
-    assertEquals("  p4: 0 -> 270", logs.get(4));
+    assertEquals(0, exitCode);
     try (var resultPdf = new PdfDocument(new PdfReader(base + "/target.pdf"))) {
       assertEquals(0, resultPdf.getPage(1).getRotation());
       assertEquals(90, resultPdf.getPage(2).getRotation());
       assertEquals(180, resultPdf.getPage(3).getRotation());
       assertEquals(270, resultPdf.getPage(4).getRotation());
     }
+    assertLogMatches(Level.INFO,
+        base + "/target.pdf",
+        "  p1: 90 -> 0",
+        "  p2: 180 -> 90",
+        "  p3: 270 -> 180",
+        "  p4: 0 -> 270",
+        "  -> " + base + "/target.pdf");
+  }
+
+  //
+  // complex normal cases
+  //
+
+  @Test
+  void testContentsNotUpdated() throws Exception {
+    // Setup
+    DataManager.generatePdf(base.resolve("ref.pdf"), 0, 90, 180, 270);
+    DataManager.generatePdf(base.resolve("target.pdf"), 0, 90, 180, 270);
+    var originalTargetTimestamp = Files.getLastModifiedTime(base.resolve("target.pdf"));
+    Thread.sleep(1000); // to be sure the newer is newer on any file system
+    // Exercise
+    var exitCode = cmd.execute("--ref-pdf", base + "/ref.pdf", "--force", base + "/target.pdf");
+    // Verify
+    assertEquals(0, exitCode);
+    var currentTargetTimestamp = Files.getLastModifiedTime(base.resolve("target.pdf"));
+    assertEquals(originalTargetTimestamp, currentTargetTimestamp);
+  }
+
+  //
+  // error cases
+  //
+
+  @Test
+  void testInvalidDegree() throws Exception {
+    // Setup
+    DataManager.generatePdf(base.resolve("src.pdf"), 0);
+    // Exercise
+    var exitCode = cmd.execute("--degree", "1", "--force", base + "/src.pdf");
+    // Verify
+    assertEquals(1, exitCode);
+    assertEquals("java.lang.IllegalArgumentException: --degree must be 0, 90, 180, or 270",
+        err.toString().split("\\n")[0]);
   }
 
   @Test
-  public void test_fOptionWithAllPagesDiffer_relativePath() throws Exception {
+  void testRefPdfNotExist() throws Exception {
     // Setup
-    Path refPdf = Paths.get("junit_ref.pdf");
-    Path targetPdf = Paths.get("junit_target.pdf");
-    DataManager.generatePdf(refPdf, 0, 90, 180, 270);
-    DataManager.generatePdf(targetPdf, 90, 180, 270, 0);
+    DataManager.generatePdf(base.resolve("target.pdf"), 90, 180, 270, 0);
     // Exercise
-    cmd.execute("-f", refPdf.toString(), targetPdf.toString());
+    var exitCode = cmd.execute("--ref-pdf", base + "/ref.pdf", "--force", base + "/target.pdf");
     // Verify
-    assertEquals(5, logs.size());
-    assertEquals(targetPdf.toString(), logs.get(0));
-    assertEquals("  p1: 90 -> 0", logs.get(1));
-    assertEquals("  p2: 180 -> 90", logs.get(2));
-    assertEquals("  p3: 270 -> 180", logs.get(3));
-    assertEquals("  p4: 0 -> 270", logs.get(4));
-    try (var resultPdf = new PdfDocument(new PdfReader(targetPdf.toString()))) {
-      assertEquals(0, resultPdf.getPage(1).getRotation());
-      assertEquals(90, resultPdf.getPage(2).getRotation());
-      assertEquals(180, resultPdf.getPage(3).getRotation());
-      assertEquals(270, resultPdf.getPage(4).getRotation());
+    assertEquals(1, exitCode);
+    assertEquals(String.format("java.nio.file.NoSuchFileException: %s/ref.pdf", base), err.toString().split("\\n")[0]);
+  }
+
+  @Test
+  void testRefPdfIsDir() throws Exception {
+    // Setup
+    DataManager.generatePdf(base.resolve("target.pdf"), 90, 180, 270, 0);
+    Files.createDirectory(base.resolve("dir1"));
+    // Exercise
+    var exitCode = cmd.execute("--ref-pdf", base + "/dir1", "--force", base + "/target.pdf");
+    // Verify
+    assertEquals(1, exitCode);
+    assertEquals(String.format("java.nio.file.NoSuchFileException: %s/dir1", base), err.toString().split("\\n")[0]);
+  }
+
+  @Test
+  void testRefPdfAndTargetPdfAreSame() throws Exception {
+    // Setup
+    DataManager.generatePdf(base.resolve("ref.pdf"), 0, 90, 180, 270);
+    // Exercise
+    var exitCode = cmd.execute("--ref-pdf", base + "/ref.pdf", "--force", base + "/ref.pdf");
+    // Verify
+    assertEquals(1, exitCode);
+    assertEquals("java.lang.IllegalArgumentException: Reference and target PDFs are the same",
+        err.toString().split("\\n")[0]);
+  }
+
+  //
+  // utilities
+  //
+
+  void assertLogMatches(Level expectedLevel, String... expectedMessages) {
+    verify(mockAppender, times(expectedMessages.length)).doAppend(captor.capture());
+    var expectedLines = new LinkedList<>(Arrays.asList(expectedMessages));
+    for (var event : captor.getAllValues()) {
+      assertEquals(expectedLevel, event.getLevel());
+      assertTrue(event.getFormattedMessage().matches(expectedLines.removeFirst()));
     }
-    // Teardown
-    Files.delete(refPdf);
-    Files.delete(targetPdf);
   }
 }

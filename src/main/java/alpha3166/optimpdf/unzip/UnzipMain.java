@@ -1,32 +1,29 @@
 package alpha3166.optimpdf.unzip;
 
-import java.util.concurrent.Callable;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import alpha3166.optimpdf.framework.AbstractCommandMain;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 
-@Command(name = "unzip", description = "Create PDF from images in the Zip")
-public class UnzipMain implements Callable<Integer> {
-  Logger logger = LoggerFactory.getLogger(getClass());
-
+@Command(name = "unzip", description = "Create PDF from images in ZIP.")
+public class UnzipMain extends AbstractCommandMain {
   @Mixin
-  OptionParser arg;
+  UnzipOption opt;
 
   @Override
-  public Integer call() throws Exception {
-    var opt = new OptionHandler(arg);
-    var zipMap = opt.zipMap();
-    for (var zipPath : zipMap.keySet()) {
-      logger.info(zipPath.toString());
-      var pdfPath = zipMap.get(zipPath);
-      var zipHandler = new ZipHandler(zipPath);
-      var imagePathList = zipHandler.getImagePathList();
-      PdfHandler.createPdfFromImages(pdfPath, imagePathList, opt.isRightToLeft());
-      zipHandler.close();
-    }
-    return 0;
+  protected void adjustFileMap(Map<Path, Path> fileMap) throws Exception {
+    fileMap.replaceAll((k, v) -> Paths.get(v.toString().replaceFirst("(\\.\\w+)?$", ".pdf")));
+  }
+
+  @Override
+  protected boolean processFile(Path src, Path temp, boolean dryRun, boolean quiet) throws Exception {
+    var zipHandler = new ZipHandler(src);
+    var imagePathList = zipHandler.getImagePathList();
+    PdfHandler.createPdfFromImages(temp, imagePathList, opt.rightToLeft);
+    zipHandler.close();
+    return true;
   }
 }

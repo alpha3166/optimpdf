@@ -1,6 +1,7 @@
 package alpha3166.optimpdf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -27,52 +28,82 @@ public class MainTest {
   }
 
   @Test
-  void test_Help_Short() throws Exception {
+  void testNoArguments() throws Exception {
+    // Exercise
+    var exitCode = cmd.execute();
+    // Verify
+    assertEquals(0, exitCode);
+    assertEquals("", out.toString());
+    assertEquals("", err.toString());
+  }
+
+  @Test
+  void testShortHelpOption() throws Exception {
     // Exercise
     var exitCode = cmd.execute("-h");
     // Verify
     assertEquals(0, exitCode);
-    assertEquals("Usage:", out.toString().substring(0, 6));
-    assertEquals(0, err.getBuffer().length());
+    assertTrue(out.toString().startsWith("Usage: optimpdf "));
+    assertEquals("", err.toString());
   }
 
   @Test
-  void test_Help() throws Exception {
+  void testLongHelpOption() throws Exception {
     // Exercise
     var exitCode = cmd.execute("--help");
     // Verify
     assertEquals(0, exitCode);
-    assertEquals("Usage:", out.toString().substring(0, 6));
-    assertEquals(0, err.getBuffer().length());
+    assertTrue(out.toString().startsWith("Usage: optimpdf "));
+    assertEquals("", err.toString());
   }
 
   @Test
-  void test_Version_Short() throws Exception {
+  void testShortVersionOption() throws Exception {
     // Exercise
     var exitCode = cmd.execute("-V");
     // Verify
     assertEquals(0, exitCode);
-    assertEquals("OptimPDF ", out.toString().substring(0, 9));
-    assertEquals(0, err.getBuffer().length());
+    assertTrue(out.toString().matches("OptimPDF \\d+\\.\\d+\\.\\d+\\n"));
+    assertEquals("", err.toString());
   }
 
   @Test
-  void test_Version() throws Exception {
+  void testLongVersionOption() throws Exception {
     // Exercise
     var exitCode = cmd.execute("--version");
     // Verify
     assertEquals(0, exitCode);
-    assertEquals("OptimPDF ", out.toString().substring(0, 9));
-    assertEquals(0, err.getBuffer().length());
+    assertTrue(out.toString().matches("OptimPDF \\d+\\.\\d+\\.\\d+\\n"));
+    assertEquals("", err.toString());
   }
 
   @Test
-  void test_UnknownOption() throws Exception {
+  void testUnknownOption() throws Exception {
     // Exercise
-    var exitCode = cmd.execute("-X");
+    var exitCode = cmd.execute("--unknown");
     // Verify
     assertEquals(2, exitCode);
-    assertEquals(0, out.getBuffer().length());
-    assertEquals("Unknown option: '-X'", err.toString().substring(0, 20));
+    assertEquals("", out.toString());
+    assertTrue(err.toString().startsWith("Unknown option: '--unknown'"));
+  }
+
+  @Test
+  void testHelpSubcommand() throws Exception {
+    // Exercise
+    var exitCode = cmd.execute("help");
+    // Verify
+    assertEquals(0, exitCode);
+    assertTrue(out.toString().startsWith("Usage: optimpdf "));
+    assertEquals("", err.toString());
+  }
+
+  @Test
+  void testUnknownSubcommand() throws Exception {
+    // Exercise
+    var exitCode = cmd.execute("unknown");
+    // Verify
+    assertEquals(2, exitCode);
+    assertEquals("", out.toString());
+    assertTrue(err.toString().startsWith("Unmatched argument at index 0: 'unknown'"));
   }
 }
