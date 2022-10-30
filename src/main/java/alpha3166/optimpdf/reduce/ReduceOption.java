@@ -16,7 +16,7 @@ public class ReduceOption {
   String screenSize = "1536x2048";
 
   @Option(names = { "-W", "--double-page-threshold" }, //
-      description = "double-page size threshold. halve output screen size if the source JPEG is smaller than this. (Default: ${DEFAULT-VALUE})")
+      description = "Set double-page size threshold. Halve output screen size if the source JPEG is smaller than this. (Default: ${DEFAULT-VALUE})")
   int doublePageThreshold = 2539;
 
   @Option(names = { "-Q", "--jpeg-quality" }, //
@@ -28,6 +28,6 @@ public class ReduceOption {
   String bleachPages;
 
   @Option(names = { "-T", "--number-of-threads" }, //
-      description = "number of threads to use (Default: ${DEFAULT-VALUE})")
+      description = "Set number of threads to use. (Default: ${DEFAULT-VALUE})")
   int numberOfThreads = Runtime.getRuntime().availableProcessors();
 }

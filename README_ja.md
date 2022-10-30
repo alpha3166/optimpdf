@@ -84,7 +84,7 @@
 -P, --pages=_pages_|指定されたページだけを処理する。(例: 1,3-5)
 -Q, --jpeg-quality=_jpegQuality_|JPEGの品質を指定する。(デフォルト: 50)
 -S, --screen-size=_screenSize_|出力画面サイズを指定する。(デフォルト: 1536x2048)
--T, --number-of-threads=_numberOfThreads_|使用するスレッド数を指定する (デフォルト: CPUコア数)
+-T, --number-of-threads=_numberOfThreads_|使用するスレッド数を指定する。(デフォルト: CPUコア数)
 -W, --double-page-threshold=_doublePageThreshold_|見開きサイズの閾値を指定する。入力JPEGがこれ以下の場合、出力画面サイズを半分にする。(Default: 2539)
 
 ### `rotate`サブコマンドのオプション

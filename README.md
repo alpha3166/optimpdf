@@ -84,8 +84,8 @@ Option|Description
 -P, --pages=_pages_|Process specified pages only. (eg: 1,3-5)
 -Q, --jpeg-quality=_jpegQuality_|Set JPEG quality. (Default: 50)
 -S, --screen-size=_screenSize_|Set output screen size. (Default: 1536x2048)
--T, --number-of-threads=_numberOfThreads_|number of threads to use (Default: 8)
--W, --double-page-threshold=_doublePageThreshold_|double-page size threshold. halve output screen size if the source JPEG is smaller than this. (Default: 2539)
+-T, --number-of-threads=_numberOfThreads_|Set number of threads to use. (Default: 8)
+-W, --double-page-threshold=_doublePageThreshold_|Set double-page size threshold. Halve output screen size if the source JPEG is smaller than this. (Default: 2539)
 
 ### Options for `rotate` subcommand
 
