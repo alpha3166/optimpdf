@@ -29,11 +29,11 @@
 
 1. Java (11以降) とImageMagick (6以降) をインストールします。
 
-2. [Releaseページ](https://github.com/alpha3166/optimpdf/releases)から`optimpdf-1.0.2-jar-with-dependencies.jar`をダウンロードします。
+2. [Releaseページ](https://github.com/alpha3166/optimpdf/releases)から`optimpdf-2.0.0-jar-with-dependencies.jar`をダウンロードします。
 
 3. コマンドラインから、サブコマンドと対象ファイルを引数に指定して、JARを実行します。
 
-    java -jar optimpdf-1.0.2-jar-with-dependencies.jar reduce some.pdf
+    java -jar optimpdf-2.0.0-jar-with-dependencies.jar reduce some.pdf
 
 ## 入出力の指定
 

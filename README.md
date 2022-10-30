@@ -29,11 +29,11 @@ The following subcommands are accepted.
 
 1. Install Java (11 or later) and ImageMagick (6 or later).
 
-2. Download `optimpdf-1.0.2-jar-with-dependencies.jar` from the [Release page](https://github.com/alpha3166/optimpdf/releases).
+2. Download `optimpdf-2.0.0-jar-with-dependencies.jar` from the [Release page](https://github.com/alpha3166/optimpdf/releases).
 
 3. Execute the JAR from the command line, specifying the subcommand and target file(s) as arguments.
 
-    java -jar optimpdf-1.0.2-jar-with-dependencies.jar reduce some.pdf
+    java -jar optimpdf-2.0.0-jar-with-dependencies.jar reduce some.pdf
 
 ## Specifying input and output
 
