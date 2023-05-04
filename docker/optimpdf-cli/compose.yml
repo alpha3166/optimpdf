@@ -1,11 +1,9 @@
-version: '3'
 services:
   ws:
     build:
       context: ../..
       dockerfile: docker/optimpdf-cli/Dockerfile
     image: optimpdf-cli
-    user: 1000:1000
     volumes:
-      - .:/workspace
-    working_dir: /workspace
+      - .:/optimpdf
+    working_dir: /optimpdf

@@ -1,8 +1,10 @@
 FROM eclipse-temurin:11-alpine
-RUN addgroup -g 1000 me && \
-    adduser -u 1000 -G me -D me
-RUN apk -U add sudo && \
-    echo "me ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/me
-RUN apk -U add git less
-RUN apk -U add maven
-RUN apk -U add imagemagick
+ARG USERNAME=me
+RUN addgroup -g 1000 $USERNAME && \
+    adduser -u 1000 -G $USERNAME -D $USERNAME
+RUN apk --update-cache add sudo && \
+    echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USERNAME
+RUN apk add git less
+RUN apk add maven
+RUN apk add imagemagick
+USER $USERNAME

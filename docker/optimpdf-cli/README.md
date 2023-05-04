@@ -2,7 +2,7 @@
 
 ## Setup
 
-Replace UID (`1000`) and GID (`1000`) in `Dockerfile` and `docker-compose.yml` with yours.
+Replace UID (`1000`) and GID (`1000`) in `Dockerfile` with yours.
 
 Put target PDF files in this directory.
 
@@ -14,10 +14,10 @@ To build image:
 
 To run:
 
-    docker run -it --rm -u $(id -u):$(id -g) -v $PWD:/workspace -w /workspace optimpdf-cli some.pdf
+    docker run -it --rm -v $PWD:/optimpdf -w /optimpdf optimpdf-cli some.pdf
 
-## With Docker-Compose
+## With Docker Compose
 
 To run:
 
-    docker-compose run --rm ws some.pdf
+    docker compose run --rm ws some.pdf

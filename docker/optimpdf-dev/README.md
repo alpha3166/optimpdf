@@ -2,7 +2,7 @@
 
 ## Setup
 
-Replace UID (`1000`) and GID (`1000`) in `Dockerfile` and `docker-compose.yml` with yours.
+Replace UID (`1000`) and GID (`1000`) in `Dockerfile` with yours.
 
 ## With Docker
 
@@ -12,10 +12,10 @@ To build image:
 
 To start shell:
 
-    docker run -it --rm -u $(id -u):$(id -g) -v ~/.m2:/home/me/.m2 -v $PWD/../..:/optimpdf -w /optimpdf optimpdf-dev sh
+    docker run -it --rm -v ~/.m2:/home/me/.m2 -v $PWD/../..:/optimpdf -w /optimpdf optimpdf-dev sh
 
-## With Docker-Compose
+## With Docker Compose
 
 To start shell:
 
-    docker-compose run --rm ws sh
+    docker compose run --rm ws sh
