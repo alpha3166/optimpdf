@@ -1,7 +1,6 @@
 package alpha3166.optimpdf.rotate;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,7 +22,7 @@ public class DataManager {
     Files.walk(dir).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
   }
 
-  public static void generatePdf(Path path, int... rotations) throws FileNotFoundException {
+  public static void generatePdf(Path path, int... rotations) throws IOException {
     var pdfWriter = new PdfWriter(path.toFile());
     try (var pdfDoc = new PdfDocument(pdfWriter); var doc = new Document(pdfDoc)) {
       for (int i = 0; i < rotations.length; i++) {

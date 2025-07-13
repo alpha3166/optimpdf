@@ -1,7 +1,6 @@
 package alpha3166.optimpdf.reduce;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,7 +54,7 @@ public class DataManager {
     return pOutReader.getBytes();
   }
 
-  public static void generatePdf(Path path, byte[] jpeg) throws FileNotFoundException {
+  public static void generatePdf(Path path, byte[] jpeg) throws IOException {
     var imageData = ImageDataFactory.create(jpeg);
     // Assume the jpeg is 300dpi, and calculate the size in points.
     var widthPt = (imageData.getWidth() / 300) * 72;
