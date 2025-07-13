@@ -24,11 +24,11 @@ public class DataManager {
   }
 
   public static byte[] generateJpeg() throws IOException {
-    return execCommand("convert wizard: jpeg:-");
+    return execCommand(ImageMagick.COMMAND + " wizard: jpeg:-");
   }
 
   public static byte[] generateJpeg(int width, int height) throws IOException {
-    return execCommand(String.format("convert wizard: -resize %dx%d! jpeg:-", width, height));
+    return execCommand(String.format(ImageMagick.COMMAND + " wizard: -resize %dx%d! jpeg:-", width, height));
   }
 
   private static byte[] execCommand(String command) throws IOException {

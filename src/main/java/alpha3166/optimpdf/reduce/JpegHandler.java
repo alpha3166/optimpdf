@@ -44,7 +44,7 @@ public class JpegHandler {
 
   public JpegHandler resize(int quality, int maxWidth, int maxHeight, boolean bleach) throws IOException {
     var cmd = new ArrayList<String>();
-    cmd.add("convert");
+    cmd.add(ImageMagick.COMMAND);
     cmd.add("-"); // STDIN
     cmd.add("-quality");
     cmd.add(Integer.toString(quality));
