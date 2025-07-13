@@ -2,6 +2,10 @@
 
 ## Setup
 
+Create `~/.m2` directory to prevent it from being owned by root.
+
+    mkdir ~/.m2
+
 Replace UID (`1000`) and GID (`1000`) in `Dockerfile` with yours.
 
 ## With Docker
