@@ -45,35 +45,38 @@ class PdfHandlerTest {
   @Test
   void testPdfHandler_StampingMode() throws Exception {
     // Exercise
-    var sut = new PdfHandler(base.resolve("src.pdf"), base.resolve("dest.pdf"));
-    // Verify
-    assertNotNull(sut);
-    assertTrue(Files.isRegularFile(base.resolve("dest.pdf")));
+    try (var sut = new PdfHandler(base.resolve("src.pdf"), base.resolve("dest.pdf"))) {
+      // Verify
+      assertNotNull(sut);
+      assertTrue(Files.isRegularFile(base.resolve("dest.pdf")));
+    }
   }
 
   @Test
   void testExtractJpeg() throws Exception {
     // Setup
-    var sut = new PdfHandler(base.resolve("src.pdf"), base.resolve("dest.pdf"));
-    // Exercise
-    var actual = sut.extractJpeg(1);
-    // Verify
-    var jpegHandler = new JpegHandler(actual);
-    assertEquals(480, jpegHandler.getWidth());
-    assertEquals(640, jpegHandler.getHeight());
+    try (var sut = new PdfHandler(base.resolve("src.pdf"), base.resolve("dest.pdf"))) {
+      // Exercise
+      var actual = sut.extractJpeg(1);
+      // Verify
+      var jpegHandler = new JpegHandler(actual);
+      assertEquals(480, jpegHandler.getWidth());
+      assertEquals(640, jpegHandler.getHeight());
+    }
   }
 
   @Test
   void testReplaceJpeg() throws Exception {
     // Setup
     var newJpeg = DataManager.generateJpeg(240, 320);
-    var sut = new PdfHandler(base.resolve("src.pdf"), base.resolve("dest.pdf"));
-    // Exercise
-    sut.replaceJpeg(1, newJpeg, 240, 320, false);
-    // Verify
-    var jpegHandler = new JpegHandler(sut.extractJpeg(1));
-    assertEquals(240, jpegHandler.getWidth());
-    assertEquals(320, jpegHandler.getHeight());
+    try (var sut = new PdfHandler(base.resolve("src.pdf"), base.resolve("dest.pdf"))) {
+      // Exercise
+      sut.replaceJpeg(1, newJpeg, 240, 320, false);
+      // Verify
+      var jpegHandler = new JpegHandler(sut.extractJpeg(1));
+      assertEquals(240, jpegHandler.getWidth());
+      assertEquals(320, jpegHandler.getHeight());
+    }
   }
 
   @Test
@@ -85,19 +88,21 @@ class PdfHandlerTest {
     // Exercise
     sut.close();
     // Verify
-    var pdfHandler = new PdfHandler(base.resolve("dest.pdf"));
-    var jpegHandler = new JpegHandler(pdfHandler.extractJpeg(1));
-    assertEquals(240, jpegHandler.getWidth());
-    assertEquals(320, jpegHandler.getHeight());
+    try (var pdfHandler = new PdfHandler(base.resolve("dest.pdf"))) {
+      var jpegHandler = new JpegHandler(pdfHandler.extractJpeg(1));
+      assertEquals(240, jpegHandler.getWidth());
+      assertEquals(320, jpegHandler.getHeight());
+    }
   }
 
   @Test
   void testGetNumberOfPages() throws Exception {
     // Setup
-    var sut = new PdfHandler(base.resolve("src.pdf"), base.resolve("dest.pdf"));
-    // Exercise
-    var actual = sut.getNumberOfPages();
-    // Verify
-    assertEquals(1, actual);
+    try (var sut = new PdfHandler(base.resolve("src.pdf"), base.resolve("dest.pdf"))) {
+      // Exercise
+      var actual = sut.getNumberOfPages();
+      // Verify
+      assertEquals(1, actual);
+    }
   }
 }
