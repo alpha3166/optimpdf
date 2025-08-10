@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>alpha3166</groupId>
   <artifactId>optimpdf</artifactId>
-  <version>2.0.0</version>
+  <version>2.1.0</version>
   <name>OptimPDF</name>
   <properties>
     <maven.compiler.target>21</maven.compiler.target>
