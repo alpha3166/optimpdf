@@ -29,6 +29,8 @@ public class PdfHandler {
       pdfDoc.getCatalog().setViewerPreferences(viewerPref);
     }
 
+    pdfDoc.getDocumentInfo().setCreator("PFU ScanSnap");
+
     var doc = new Document(pdfDoc);
     for (var imagePath : imagePathList) {
       var bytes = Files.readAllBytes(imagePath);
