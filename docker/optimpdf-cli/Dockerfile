@@ -1,10 +1,10 @@
-FROM eclipse-temurin:25-alpine as builder
+FROM docker.io/library/eclipse-temurin:25-alpine as builder
 RUN apk --update-cache add maven imagemagick
 COPY . /optimpdf
 WORKDIR /optimpdf
 RUN mvn package
 
-FROM eclipse-temurin:25-jre-alpine as runner
+FROM docker.io/library/eclipse-temurin:25-jre-alpine as runner
 ARG USERNAME=me
 RUN addgroup -g 1000 $USERNAME && \
     adduser -u 1000 -G $USERNAME -D $USERNAME && \
