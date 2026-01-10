@@ -1,24 +1,19 @@
 {
-  "dockerComposeFile": [
-    "../docker/optimpdf-dev/compose.yml"
-  ],
-  "service": "ws",
-  "overrideCommand": true,
-  "workspaceFolder": "/optimpdf",
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        // Docker
-        "ms-azuretools.vscode-docker",
-        // markdownlint
-        "DavidAnson.vscode-markdownlint",
-        // Extension Pack for Java
-        "vscjava.vscode-java-pack",
-        // Dependency Analytics
-        "redhat.fabric8-analytics",
-        // XML Tools
-        "dotjoshjohnson.xml"
-      ]
-    }
-  }
+	"name": "optimpdf",
+	"image": "mcr.microsoft.com/devcontainers/base:trixie",
+	"features": {
+		"ghcr.io/devcontainers/features/java:1": {
+			"installMaven": true
+		}
+	},
+	"onCreateCommand": "sudo apt-get update -y && sudo apt-get install -y imagemagick",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"DavidAnson.vscode-markdownlint",
+				"DotJoshJohnson.xml",
+				"ms-azuretools.vscode-containers"
+			]
+		}
+	}
 }
