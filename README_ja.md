@@ -25,15 +25,21 @@
 - PDFが右開きになるよう指定することもできます。
 - ZIP内のパスでソートした順序で出力します。
 
+### `setview`
+
+- PDFの初期表示設定を変更します。
+- ページレイアウト、ズームレベル、読み込み方向を指定できます。
+- PDFリーダーで開いたときの表示方法を設定するのに便利です。
+
 ## 起動方法
 
 1. Java (11以降) とImageMagick (6以降) をインストールします。
 
-2. [Releaseページ](https://github.com/alpha3166/optimpdf/releases)から`optimpdf-2.0.0-jar-with-dependencies.jar`をダウンロードします。
+2. [Releaseページ](https://github.com/alpha3166/optimpdf/releases)から`optimpdf-2.1.0-jar-with-dependencies.jar`をダウンロードします。
 
 3. コマンドラインから、サブコマンドと対象ファイルを引数に指定して、JARを実行します。
 
-    java -jar optimpdf-2.0.0-jar-with-dependencies.jar reduce some.pdf
+    java -jar optimpdf-2.1.0-jar-with-dependencies.jar reduce some.pdf
 
 ## 入出力の指定
 
@@ -98,6 +104,15 @@
 
 オプション|説明
 -|-
+-R, --right-to-left|右開きにする。
+
+### `setview`サブコマンドのオプション
+
+オプション|説明
+-|-
+--clear|編集前にカタログからOpenAction、PageLayout、ViewerPreferencesを削除する。
+-F, --fit|ページ全体を表示するよう拡大/縮小する。
+-L, --page-layout=_layout_|ページレイアウトを設定する。_layout_は SinglePage、OneColumn、TwoColumnLeft、TwoColumnRight、TwoPageLeft、TwoPageRight のいずれかである必要があります。
 -R, --right-to-left|右開きにする。
 
 ## ビルド方法

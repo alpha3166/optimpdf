@@ -25,15 +25,21 @@ The following subcommands are accepted.
 - You can also specify that the PDF should be right-open.
 - The output is sorted by path in the ZIP.
 
+### `setview`
+
+- Sets the initial page view properties of a PDF.
+- Allows you to specify the page layout, zoom level, and reading direction.
+- Useful for configuring how the PDF should be displayed when opened in a reader.
+
 ## How to start
 
 1. Install Java (11 or later) and ImageMagick (6 or later).
 
-2. Download `optimpdf-2.0.0-jar-with-dependencies.jar` from the [Release page](https://github.com/alpha3166/optimpdf/releases).
+2. Download `optimpdf-2.1.0-jar-with-dependencies.jar` from the [Release page](https://github.com/alpha3166/optimpdf/releases).
 
 3. Execute the JAR from the command line, specifying the subcommand and target file(s) as arguments.
 
-    java -jar optimpdf-2.0.0-jar-with-dependencies.jar reduce some.pdf
+    java -jar optimpdf-2.1.0-jar-with-dependencies.jar reduce some.pdf
 
 ## Specifying input and output
 
@@ -100,9 +106,18 @@ Option|Description
 -|-
 -R, --right-to-left|Set direction to right-to-left.
 
+### Options for `setview` subcommand
+
+Option|Description
+-|-
+--clear|Remove OpenAction, PageLayout, ViewerPreferences from catalog before editing.
+-F, --fit|Zoom to show entire page.
+-L, --page-layout=_layout_|Set page layout. _layout_ must be one of SinglePage, OneColumn, TwoColumnLeft, TwoColumnRight, TwoPageLeft, TwoPageRight.
+-R, --right-to-left|Set direction to right-to-left.
+
 ## How to build
 
-Install Git, Java (11 or later), Maven, and ImageMagick (6 or later), then clone & build.
+Install Git, Java (25 or later), Maven, and ImageMagick (6 or later), then clone & build.
 
     git clone https://github.com/alpha3166/optimpdf
     cd optimpdf
