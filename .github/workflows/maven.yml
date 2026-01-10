@@ -16,11 +16,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up JDK 21
+    - name: Set up JDK 25
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: 21
+        java-version: 25
     - name: Install ImageMagick
       run: sudo apt-get install imagemagick
     - name: Build with Maven
