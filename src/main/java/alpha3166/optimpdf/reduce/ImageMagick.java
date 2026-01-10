@@ -12,7 +12,7 @@ public class ImageMagick {
         COMMAND = "magick";
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      // ignore
     }
   }
 }
