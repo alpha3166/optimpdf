@@ -33,7 +33,7 @@
 
 ## 起動方法
 
-1. Java (11以降) とImageMagick (6以降) をインストールします。
+1. Java (25以降) とImageMagick (6以降) をインストールします。
 
 2. [Releaseページ](https://github.com/alpha3166/optimpdf/releases)から`optimpdf-2.1.0-jar-with-dependencies.jar`をダウンロードします。
 
@@ -117,7 +117,7 @@
 
 ## ビルド方法
 
-Git、Java (11以降)、Maven、ImageMagick (6以降) をインストールし、クローン&ビルドします。
+Git、Java (25以降)、Maven、ImageMagick (6以降) をインストールし、クローン&ビルドします。
 
     git clone https://github.com/alpha3166/optimpdf
     cd optimpdf

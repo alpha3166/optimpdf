@@ -33,7 +33,7 @@ The following subcommands are accepted.
 
 ## How to start
 
-1. Install Java (11 or later) and ImageMagick (6 or later).
+1. Install Java (25 or later) and ImageMagick (6 or later).
 
 2. Download `optimpdf-2.1.0-jar-with-dependencies.jar` from the [Release page](https://github.com/alpha3166/optimpdf/releases).
 
