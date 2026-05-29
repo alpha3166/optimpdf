@@ -1,8 +1,9 @@
+name: optimpdf
 services:
-  ws:
+  cli:
     build:
       context: ../..
-      dockerfile: docker/optimpdf-cli/Dockerfile
+      dockerfile: container/cli/Containerfile
     image: optimpdf-cli
     volumes:
       - .:/optimpdf
