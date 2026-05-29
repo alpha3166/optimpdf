@@ -1,19 +1,15 @@
 {
-	"name": "optimpdf",
-	"image": "mcr.microsoft.com/devcontainers/base:trixie",
-	"features": {
-		"ghcr.io/devcontainers/features/java:1": {
-			"installMaven": true
-		}
-	},
-	"onCreateCommand": "sudo apt-get update -y && sudo apt-get install -y imagemagick",
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"DavidAnson.vscode-markdownlint",
-				"DotJoshJohnson.xml",
-				"ms-azuretools.vscode-containers"
-			]
-		}
-	}
+  "name": "optimpdf",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/mise:1": {}
+  },
+  "postCreateCommand": "set -e; mise use --global java@latest; mise use --global maven@latest; echo 'eval \"$(mise activate bash)\"' >> ~/.bashrc; sudo apt-get update -y; sudo apt-get install -y imagemagick",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack"
+      ]
+    }
+  }
 }
