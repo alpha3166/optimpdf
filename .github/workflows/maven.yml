@@ -22,6 +22,6 @@ jobs:
         distribution: 'temurin'
         java-version: 25
     - name: Install ImageMagick
-      run: sudo apt-get install imagemagick
+      run: sudo apt-get update -y && sudo apt-get install -y imagemagick
     - name: Build with Maven
       run: mvn --batch-mode package
